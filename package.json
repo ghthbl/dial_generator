@@ -1,0 +1,9 @@
+{
+  "name": "podvig-dial-generator",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Self-contained metric SVG watch dial studio; dependencies are for regression tests only.",
+  "scripts": { "test": "node --test tests/studio.test.cjs" },
+  "devDependencies": { "jsdom": "26.1.0" },
+  "engines": { "node": ">=18" }
+}

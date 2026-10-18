@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podvig 02 Night Relay — Precision SVG Dial & Handset Studio</title>
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --panel: #14161d;
+      --panel-alt: #1b1e28;
+      --border: #282c3a;
+      --text: #eef0f6;
+      --muted: #949ba8;
+      --accent: #f2c41d;
+      --cyan: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 13px 22px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    h1 { font-size: 1.06rem; font-weight: 600; letter-spacing: 0.02em; }
+    .subtitle { font-size: 0.77rem; color: var(--muted); margin-top: 2px; }
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 430px;
+      flex: 1;
+      min-height: calc(100vh - 64px);
+    }
+    @media (max-width: 1080px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+    .viewport {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: radial-gradient(circle at center, #1b1e26 0%, #0d0f14 75%);
+      position: relative;
+    }
+    #svgContainer {
+      width: min(76vh, 88vw);
+      height: min(76vh, 88vw);
+      max-width: 760px;
+      max-height: 760px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 20px 50px rgba(0,0,0,0.75));
+    }
+    #svgContainer svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .telemetry-bar {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      background: rgba(20, 22, 29, 0.9);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .telemetry-bar span strong { color: var(--accent); font-family: monospace; }
+    .sidebar {
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .section {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.79rem;
+    }
+    .row label { color: #d0d5e0; }
+    .val-badge {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    select, button {
+      background: #252936;
+      color: var(--text);
+      border: 1px solid #3a4052;
+      padding: 7px 11px;
+      border-radius: 6px;
+      font-size: 0.79rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    select { width: 100%; }
+    button:hover { border-color: var(--accent); color: #fff; }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    button.primary {
+      background: var(--accent);
+      color: #111;
+      border-color: var(--accent);
+      font-weight: 600;
+      grid-column: span 2;
+      padding: 9px;
+    }
+    button.primary:hover { background: #ffd438; }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #d0d5e0;
+      cursor: pointer;
+    }
+    .checkbox-row input { accent-color: var(--accent); cursor: pointer; }
+    input[type="number"] { width: 110px; background: #10131b; color: var(--text); border: 1px solid #3a4052; border-radius: 5px; padding: 6px; font: inherit; }
+    .note { color: var(--muted); font-size: .74rem; line-height: 1.45; }
+    .note a { color: var(--cyan); }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .field-grid label { display: flex; flex-direction: column; gap: 4px; font-size: .75rem; }
+    .field-grid input { width: 100%; }
+    details { font-size: .77rem; }
+    summary { cursor: pointer; color: var(--cyan); margin: 4px 0 8px; }
+    #engineeringStatus { max-width: 760px; margin-top: 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: .75rem; line-height: 1.5; background: var(--panel); }
+    #engineeringStatus[data-level="warning"] { border-color: #b58e0a; }
+    #engineeringStatus[data-level="error"] { border-color: #ef4444; }
+    #exportStatus { color: var(--cyan); min-height: 1em; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    @media (min-width: 1081px) { .viewport { position: sticky; top: 0; height: 100vh; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>PODVIG 02 NIGHT RELAY — Precision SVG Dial &amp; Handset Studio</h1>
+    <div class="subtitle">
+      1:1 Metric SVG (1 unit = 1.00 mm) • SW210 project default • Movement geometry stays physical • 30°/60° Hour-Aligned Octagon • 10 Toggleable Layers
+    </div>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button id="pose1010Btn">Pose: 10:09:33</button>
+    <button id="pose1200Btn">Pose: 12:00 CAD (0°)</button>
+    <button id="resetSpecsBtn">Reset All to Spec</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <div class="viewport">
+    <div id="svgContainer"></div>
+    <div class="telemetry-bar">
+      <span>Dial Ø: <strong id="telDiameter">33.00 mm</strong></span>
+      <span>Center Hole: <strong id="telHole">Ø2.00 mm</strong></span>
+      <span>Date Window: <strong id="telDate">R=8.85..11.55 mm (2.00×2.70 mm)</strong></span>
+      <span>Octagon Ray Gaps: <strong id="telGap">1.00 mm @ 30°/60° rays</strong></span>
+      <span>Active Handset: <strong id="telHands">Set 2: Center-Skewed Kite</strong></span>
+    </div>
+    <div id="engineeringStatus" role="status" aria-live="polite"></div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="section">
+      <div class="section-title"><span>Dial Size &amp; Movement Geometry</span></div>
+      <label for="movementSelect" class="note">Movement / dial interface</label>
+      <select id="movementSelect"></select>
+      <div id="movementNote" class="note"></div>
+      <div class="row"><label for="dialDiameter">Dial diameter</label><span id="dialDiameterVal" class="val-badge">33.00 mm</span></div>
+      <input id="dialDiameter" type="range" min="28.5" max="35" step="0.05" value="33" />
+      <label class="checkbox-row"><input id="manualDiameterMode" type="checkbox" /> Extended manual diameter</label>
+      <div class="row"><label for="manualDiameter">Diameter in mm</label><input id="manualDiameter" type="number" min="5" max="39.8" step="0.01" value="33" disabled /></div>
+      <div class="note">Artwork follows diameter. Movement geometry stays in mm. Manual range: 5–39.8 mm; the fixed 40 mm sheet limits larger dials.</div>
+      <label for="crownPosition" class="note">Crown position (rotates movement and feet)</label>
+      <select id="crownPosition">
+        <option value="90">3H — 90°</option><option value="114">3.8H — 114°</option><option value="120">4H — 120°</option><option value="180">6H — 180°</option><option value="270">9H — 270°</option><option value="0">12H — 0°</option><option value="custom">Custom angle</option>
+      </select>
+      <div class="row"><label for="crownAngle">Crown angle clockwise from 12H</label><input id="crownAngle" type="number" min="0" max="360" step="0.1" value="90" disabled /></div>
+      <label for="datePosition" class="note">Date aperture position (calendar disc must match)</label>
+      <select id="datePosition">
+        <option value="none">No date aperture</option><option value="follow">Follow movement / crown rotation</option><option value="90">3H</option><option value="180" selected>6H</option><option value="270">9H</option><option value="0">12H</option><option value="135">4:30H</option><option value="custom">Custom angle</option>
+      </select>
+      <div class="row"><label for="dateAngle">Date angle clockwise from 12H</label><input id="dateAngle" type="number" min="0" max="360" step="0.1" value="180" disabled /></div>
+      <label class="checkbox-row"><input id="openHeartEnabled" type="checkbox" /> Add open-heart aperture</label>
+      <div class="field-grid">
+        <label>Heart X from arbor (mm)<input id="heartX" type="number" min="-18" max="18" step="0.001" value="-7.4" /></label>
+        <label>Heart Y from arbor (mm, down +)<input id="heartY" type="number" min="-18" max="18" step="0.001" value="-1.95" /></label>
+        <label>Heart diameter (mm)<input id="heartDiameter" type="number" min="0.5" max="20" step="0.05" value="11" /></label>
+      </div>
+      <div class="note">Heart coordinates are measured with the crown at 3H, then rotate with the movement. Overlapping print elements are omitted as whole elements.</div>
+      <details>
+        <summary>Calibrate movement interface (mm)</summary>
+        <div class="field-grid">
+          <label>Center hole Ø<input id="centerHoleDiameter" type="number" min="0.5" max="5" step="0.01" value="2" /></label>
+          <label>Foot Ø<input id="footDiameter" type="number" min="0.2" max="1.5" step="0.01" value="0.75" /></label>
+          <label>Foot 1 X<input id="foot1X" type="number" min="-18" max="18" step="0.001" value="-11.6" /></label>
+          <label>Foot 1 Y<input id="foot1Y" type="number" min="-18" max="18" step="0.001" value="3.78" /></label>
+          <label>Foot 2 X<input id="foot2X" type="number" min="-18" max="18" step="0.001" value="11.6" /></label>
+          <label>Foot 2 Y<input id="foot2Y" type="number" min="-18" max="18" step="0.001" value="-3.78" /></label>
+        </div>
+        <div class="note">Dial-front coordinates: right +X, down +Y. Use the exact calibre drawing; a family name does not guarantee interchangeability.</div>
+      </details>
+    </div>
+    <!-- 1. HANDSET SELECTION & LAYER VISIBILITY -->
+    <div class="section">
+      <div class="section-title">
+        <span>1. Handset Architecture (SVG Layers 4–10)</span>
+      </div>
+      <select id="handsetSelect">
+        <option value="set1">Set 1 (Layers 4 &amp; 5): Classic Military Sword</option>
+        <option value="set2" selected>Set 2 (Layers 6 &amp; 7): Center-Skewed Kite</option>
+        <option value="set3">Set 3 (Layers 8 &amp; 9): Tactical Rangefinder / Collimator</option>
+        <option value="all">Show All 3 Handsets Simultaneously</option>
+        <option value="none">Hide Hands (Inspect Unobstructed Dial)</option>
+      </select>
+      <label class="checkbox-row">
+        <input type="checkbox" id="showSeconds" checked />
+        Show Layer 10: Seconds Hand (Yellow + Silver Drone)
+      </label>
+      <div class="row" style="margin-top:2px;">
+        <label for="timeScrub">Interactive Hand Pose:</label>
+        <span class="val-badge" id="timeVal">10:09</span>
+      </div>
+      <input type="range" id="timeScrub" min="0" max="720" value="609" />
+    </div>
+
+    <!-- 2. HOUR-ALIGNED OCTAGON GEOMETRY -->
+    <div class="section">
+      <div class="section-title">
+        <span>2. Hour-Aligned Octagon (Layer 2)</span>
+      </div>
+      <div class="row">
+        <label for="octRadius">Octagon Vertex Radius (at Ø33 mm):</label>
+        <span class="val-badge" id="octRadiusVal">9.15 mm</span>
+      </div>
+      <input type="range" id="octRadius" min="8.30" max="9.65" step="0.05" value="9.15" />
+
+      <div class="row">
+        <label for="octGap">Centered Radial Gap Width:</label>
+        <span class="val-badge" id="octGapVal">1.00 mm</span>
+      </div>
+      <input type="range" id="octGap" min="0.50" max="1.60" step="0.05" value="1.00" />
+
+      <div class="row">
+        <label for="octClipMethod">Gap Corner Geometry:</label>
+      </div>
+      <select id="octClipMethod">
+        <option value="corridor" selected>True Ray-Vertex Corridor Clip (Virtual Corners on Ray)</option>
+        <option value="normal">Symmetric Equal-Radius Normal Offset</option>
+      </select>
+
+      <div class="row">
+        <label for="cardinalGaps">Cardinal Axis Openings (3H / 6H / 9H):</label>
+      </div>
+      <select id="cardinalGaps">
+        <option value="6h_only" selected>1.00 mm Centered Gap at 6H (Solid 3H &amp; 9H)</option>
+        <option value="all_cardinals">1.00 mm Centered Gap at 3H, 6H, and 9H</option>
+        <option value="solid_6h">Continuous Bottom Bar Above Date Window</option>
+      </select>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="showGuides" checked />
+        Show Cyan Hour Rays &amp; 1.00 mm Corridor Calipers
+      </label>
+      <label class="checkbox-row"><input type="checkbox" id="cadOutlineMode" /> Convert All Strokes to Closed Outlines (CAD / Fusion 360 Mode)</label>
+      <div class="note">CAD downloads always use closed outlines. Factory plates omit hands, preview date digits, guides, gradients and glow.</div>
+    </div>
+
+    <!-- 3. SELLITA SW200 DATE WINDOW & DIAL FINISH -->
+    <div class="section">
+      <div class="section-title">
+        <span>3. Date Window &amp; Dial Finish</span>
+      </div>
+      <div class="row">
+        <label for="dateInner">Date Inner Radial Edge from Center:</label>
+        <span class="val-badge" id="dateInnerVal">8.85 mm</span>
+      </div>
+      <input type="range" id="dateInner" min="5" max="15" step="0.01" value="8.85" />
+
+      <div class="row">
+        <label for="dateWidth">Date Tangential Width (6H width):</label>
+        <span class="val-badge" id="dateWidthVal">2.00 mm</span>
+      </div>
+      <input type="range" id="dateWidth" min="1" max="4" step="0.01" value="2.00" />
+
+      <div class="row">
+        <label for="dateHeight">Date Radial Height (6H height):</label>
+        <span class="val-badge" id="dateHeightVal">2.70 mm</span>
+      </div>
+      <input type="range" id="dateHeight" min="1" max="4" step="0.01" value="2.70" />
+
+      <div class="row">
+        <label for="dialFinish">Dial Variant (Layer 1 &amp; 3):</label>
+      </div>
+      <select id="dialFinish">
+        <option value="gradient" selected>Variant B: Center-Lightened Matte Gradient (Fumé)</option>
+        <option value="flat">Variant A: Flat Matte Very Dark Grey</option>
+        <option value="sandwich">Variant C: Gradient Sandwich Dial (Cutout Numerals/Batons)</option>
+      </select>
+
+      <div class="row">
+        <label for="lightMode">Lighting Preview:</label>
+      </div>
+      <select id="lightMode">
+        <option value="day" selected>Daylight (Warm Old Radium #E2CA96)</option>
+        <option value="dusk">Dusk / Twilight (Active Old Radium Lume Glow)</option>
+      </select>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="showDateFrame" checked />
+        Show Printed White Frame Around Date Window
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" id="showDialFeet" />
+        Show Movement Dial Feet &amp; Crown References
+      </label>
+    </div>
+
+    <!-- 4. EXPORT INDIVIDUAL SVGs -->
+    <div class="section">
+      <div class="section-title">
+        <span>4. Download 10-Layer SVG Files</span>
+      </div>
+      <div id="exportStatus" class="note" role="status" aria-live="polite"></div>
+    </div>
+    <div class="section">
+      <div class="section-title"><span>5. Factory Cliché Plates &amp; Brass Blueprints</span></div>
+      <div class="note">1:1 mm, black only, four registration targets. All plates use the current movement, size, date and open-heart geometry. Plate 0 separates alternative Swiss feet and sandwich cuts into named sub-layers.</div>
+      <button id="dlPlate0">Download Plate 0: Brass Blank &amp; Sandwich Laser Profile SVG</button>
+      <button id="dlClicheA">Download Cliché A: Octagon Track SVG</button>
+      <button id="dlClicheB">Download Cliché B: Minute Track, Wordmark &amp; Date Frame SVG</button>
+      <button id="dlClicheC">Download Cliché C: Old Radium Lume Mask SVG</button>
+      <div style="font-size:0.74rem; color:var(--muted); line-height:1.35;">
+        Every exported SVG contains all <strong>3 Handset Sets</strong> in separate Inkscape/Illustrator layers (<code>Layer 4</code>–<code>Layer 10</code>) so you can toggle them freely in your vector editor.
+      </div>
+      <div class="btn-grid">
+        <button class="primary" id="dlCurrentSvg">Download Current Dial SVG (10 Layers)</button>
+        <button id="dlFlatSvg">Download Flat Matte SVG</button>
+        <button id="dlGradSvg">Download Gradient SVG</button>
+        <button id="dlSandwichSvg">Download Sandwich SVG</button>
+        <button id="dl1200Svg">Download 12:00 CAD SVG</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+const CX = 20.0, CY = 20.0;
+const fmt = n => Number(n).toFixed(4);
+
+function polar(cx, cy, r, deg) {
+  const rad = (deg - 90.0) * Math.PI / 180.0;
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+}
+
+function rayOffsetPoint(cx, cy, r0, deg, perpOffset) {
+  const rad = deg * Math.PI / 180.0;
+  const ux = Math.sin(rad), uy = -Math.cos(rad);
+  const nx = Math.cos(rad), ny = Math.sin(rad);
+  return [
+    cx + r0 * ux + perpOffset * nx,
+    cy + r0 * uy + perpOffset * ny
+  ];
+}
+
+function rotatedRectPath(cx, cy, rIn, rOut, width, deg) {
+  const rad = deg * Math.PI / 180.0;
+  const ca = Math.cos(rad), sa = Math.sin(rad);
+  const hw = width / 2.0;
+  const corners = [
+    [-hw, -rOut],
+    [ hw, -rOut],
+    [ hw, -rIn],
+    [-hw, -rIn]
+  ].map(([lx, ly]) => [
+    cx + (lx * ca - ly * sa),
+    cy + (lx * sa + ly * ca)
+  ]);
+  return `M ${fmt(corners[0][0])} ${fmt(corners[0][1])} L ${fmt(corners[1][0])} ${fmt(corners[1][1])} L ${fmt(corners[2][0])} ${fmt(corners[2][1])} L ${fmt(corners[3][0])} ${fmt(corners[3][1])} Z`;
+}
+
+const STENCIL_12 = "M 17.4800 6.4500 L 18.8600 6.4500 L 18.8600 9.9500 L 18.0000 9.9500 L 18.0000 7.1800 L 17.4800 7.1800 Z M 19.3800 7.6000 L 19.3800 7.2000 C 19.3800 6.6800 19.7200 6.4500 20.3200 6.4500 L 20.5200 6.4500 L 20.5200 7.2000 L 20.3500 7.2000 C 20.2000 7.2000 20.1400 7.2800 20.1400 7.4500 L 20.1400 7.6000 Z M 20.7600 6.4500 L 21.0200 6.4500 C 21.6500 6.4500 22.0200 6.7200 22.0200 7.3500 L 22.0200 7.6800 C 22.0200 8.1200 21.8200 8.4200 21.3200 8.7500 L 20.3000 9.2500 L 20.5200 9.2500 L 20.5200 9.9500 L 19.3800 9.9500 L 19.3800 9.1200 C 19.3800 8.8200 19.5200 8.6200 19.8800 8.3800 L 20.9800 7.6800 C 21.1800 7.5500 21.2400 7.4500 21.2400 7.3200 C 21.2400 7.2200 21.1600 7.1800 20.9800 7.1800 L 20.7600 7.1800 Z M 20.7600 9.2500 L 22.0400 9.2500 L 22.0400 9.9500 L 20.7600 9.9500 Z";
+
+const STENCIL_3 = "M 30.2800 19.2500 L 30.2800 18.9500 C 30.2800 18.4200 30.6200 18.2000 31.2200 18.2000 L 31.3800 18.2000 L 31.3800 18.9200 L 31.2200 18.9200 C 31.0800 18.9200 31.0200 19.0000 31.0200 19.1500 L 31.0200 19.2500 Z M 30.2800 20.7500 L 31.0200 20.7500 L 31.0200 20.8500 C 31.0200 21.0000 31.0800 21.0800 31.2200 21.0800 L 31.3800 21.0800 L 31.3800 21.8000 L 31.2200 21.8000 C 30.6200 21.8000 30.2800 21.5800 30.2800 21.0500 Z M 31.6200 18.2000 L 31.9200 18.2000 C 32.5200 18.2000 32.8500 18.4500 32.8500 19.0000 L 32.8500 19.3500 C 32.8500 19.6800 32.6800 19.8800 32.3500 19.9800 C 32.7000 20.0800 32.8800 20.3000 32.8800 20.6800 L 32.8800 21.0000 C 32.8800 21.5500 32.5400 21.8000 31.9200 21.8000 L 31.6200 21.8000 L 31.6200 21.0800 L 31.8800 21.0800 C 32.0400 21.0800 32.1000 21.0000 32.1000 20.8200 L 32.1000 20.5500 C 32.1000 20.3800 32.0200 20.3200 31.8400 20.3200 L 31.2000 20.3200 L 31.2000 19.6800 L 31.8400 19.6800 C 32.0200 19.6800 32.0800 19.6000 32.0800 19.4200 L 32.0800 19.1500 C 32.0800 18.9800 32.0200 18.9200 31.8600 18.9200 L 31.6200 18.9200 Z";
+
+const STENCIL_9 = "M 8.3300 18.2000 L 8.3300 18.9200 L 8.1200 18.9200 C 7.9600 18.9200 7.9000 19.0000 7.9000 19.1800 L 7.9000 19.6500 C 7.9000 19.8200 7.9600 19.9000 8.1200 19.9000 L 8.3300 19.9000 L 8.3300 20.5500 L 8.0500 20.5500 C 7.4500 20.5500 7.1500 20.3000 7.1500 19.7200 L 7.1500 19.0000 C 7.1500 18.4500 7.4800 18.2000 8.0800 18.2000 Z M 7.1800 20.8200 L 7.9200 20.8200 L 7.9200 20.9000 C 7.9200 21.0200 7.9800 21.0800 8.1400 21.0800 L 8.3300 21.0800 L 8.3300 21.8000 L 8.1000 21.8000 C 7.5000 21.8000 7.1800 21.5500 7.1800 21.0200 Z M 8.5700 18.2000 L 8.8200 18.2000 C 9.4200 18.2000 9.7500 18.4500 9.7500 19.0200 L 9.7500 20.9800 C 9.7500 21.5500 9.4200 21.8000 8.8200 21.8000 L 8.5700 21.8000 L 8.5700 21.0800 L 8.8000 21.0800 C 8.9400 21.0800 9.0000 21.0000 9.0000 20.8200 L 9.0000 20.4200 C 8.8600 20.5000 8.7200 20.5500 8.5700 20.5500 L 8.5700 19.9000 L 8.8000 19.9000 C 8.9400 19.9000 9.0000 19.8200 9.0000 19.6500 L 9.0000 19.1800 C 9.0000 19.0000 8.9400 18.9200 8.8000 18.9200 L 8.5700 18.9200 Z";
+
+function computeOctagonGeometry(state) {
+  const r0 = state.octRadius * (state.dialDiameter / 33);
+  const d = state.octGap / 2.0; // 0.50 mm half-gap -> 1.00 mm full corridor
+  const rays = [30, 60, 120, 150, 210, 240, 300, 330];
+  const Pminus = {}, Pplus = {};
+
+  if (state.octClipMethod === 'corridor') {
+    // True Ray-Vertex Corridor Clip:
+    // Virtual vertices sit strictly on the 30°/60° hour rays at radius r0.
+    // Each segment is clipped where its perpendicular distance to the ray equals d (= 0.50 mm).
+    const cos30 = Math.cos(30 * Math.PI / 180);
+    const sin30 = 0.5;
+    const L_hv = d / cos30; // Distance along horizontal/vertical edge to reach perpendicular distance d from ray
+    const L_diag = d / Math.cos(15 * Math.PI / 180); // Distance along 45° diagonal to reach perpendicular distance d from ray
+    const diagStep = L_diag * Math.SQRT1_2;
+
+    // 30° (1H): incoming is top horizontal (-x), outgoing is TR diagonal (+x, +y)
+    const V30 = polar(CX, CY, r0, 30);
+    Pminus[30] = [V30[0] - L_hv, V30[1]];
+    Pplus[30]  = [V30[0] + diagStep, V30[1] + diagStep];
+
+    // 60° (2H): incoming is TR diagonal (-x, -y), outgoing is right vertical (+y)
+    const V60 = polar(CX, CY, r0, 60);
+    Pminus[60] = [V60[0] - diagStep, V60[1] - diagStep];
+    Pplus[60]  = [V60[0], V60[1] + L_hv];
+
+    // 120° (4H): incoming is right vertical (-y), outgoing is BR diagonal (-x, +y)
+    const V120 = polar(CX, CY, r0, 120);
+    Pminus[120] = [V120[0], V120[1] - L_hv];
+    Pplus[120]  = [V120[0] - diagStep, V120[1] + diagStep];
+
+    // 150° (5H): incoming is BR diagonal (+x, -y), outgoing is bottom horizontal (-x)
+    const V150 = polar(CX, CY, r0, 150);
+    Pminus[150] = [V150[0] + diagStep, V150[1] - diagStep];
+    Pplus[150]  = [V150[0] - L_hv, V150[1]];
+
+    // 210° (7H): incoming is bottom horizontal (+x), outgoing is BL diagonal (-x, -y)
+    const V210 = polar(CX, CY, r0, 210);
+    Pminus[210] = [V210[0] + L_hv, V210[1]];
+    Pplus[210]  = [V210[0] - diagStep, V210[1] - diagStep];
+
+    // 240° (8H): incoming is BL diagonal (+x, +y), outgoing is left vertical (-y)
+    const V240 = polar(CX, CY, r0, 240);
+    Pminus[240] = [V240[0] + diagStep, V240[1] + diagStep];
+    Pplus[240]  = [V240[0], V240[1] - L_hv];
+
+    // 300° (10H): incoming is left vertical (+y), outgoing is TL diagonal (+x, -y)
+    const V300 = polar(CX, CY, r0, 300);
+    Pminus[300] = [V300[0], V300[1] + L_hv];
+    Pplus[300]  = [V300[0] + diagStep, V300[1] - diagStep];
+
+    // 330° (11H): incoming is TL diagonal (-x, +y), outgoing is top horizontal (+x)
+    const V330 = polar(CX, CY, r0, 330);
+    Pminus[330] = [V330[0] - diagStep, V330[1] + diagStep];
+    Pplus[330]  = [V330[0] + L_hv, V330[1]];
+  } else {
+    for (const deg of rays) {
+      Pminus[deg] = rayOffsetPoint(CX, CY, r0, deg, -d);
+      Pplus[deg]  = rayOffsetPoint(CX, CY, r0, deg, +d);
+    }
+  }
+
+  const segments = [];
+  const yTop = Pplus[330][1];
+  segments.push({ id: 'oct_top_left',  x1: Pplus[330][0], y1: yTop, x2: CX - 1.65, y2: yTop });
+  segments.push({ id: 'oct_top_right', x1: CX + 1.65,     y1: yTop, x2: Pminus[30][0], y2: yTop });
+
+  segments.push({ id: 'oct_diag_tr', x1: Pplus[30][0], y1: Pplus[30][1], x2: Pminus[60][0], y2: Pminus[60][1] });
+
+  const xRight = Pplus[60][0];
+  if (state.cardinalGaps === 'all_cardinals') {
+    segments.push({ id: 'oct_right_upper', x1: xRight, y1: Pplus[60][1],  x2: xRight, y2: CY - d });
+    segments.push({ id: 'oct_right_lower', x1: xRight, y1: CY + d, x2: xRight, y2: Pminus[120][1] });
+  } else {
+    segments.push({ id: 'oct_right_full',  x1: xRight, y1: Pplus[60][1],  x2: xRight, y2: Pminus[120][1] });
+  }
+
+  segments.push({ id: 'oct_diag_br', x1: Pplus[120][0], y1: Pplus[120][1], x2: Pminus[150][0], y2: Pminus[150][1] });
+
+  const yBot = Pplus[150][1];
+  if (state.cardinalGaps === 'solid_6h') {
+    segments.push({ id: 'oct_bot_full',  x1: Pplus[150][0], y1: yBot, x2: Pminus[210][0], y2: yBot });
+  } else {
+    segments.push({ id: 'oct_bot_right', x1: Pplus[150][0], y1: yBot, x2: CX + d,   y2: yBot });
+    segments.push({ id: 'oct_bot_left',  x1: CX - d,         y1: yBot, x2: Pminus[210][0], y2: yBot });
+  }
+
+  segments.push({ id: 'oct_diag_bl', x1: Pplus[210][0], y1: Pplus[210][1], x2: Pminus[240][0], y2: Pminus[240][1] });
+
+  const xLeft = Pplus[240][0];
+  if (state.cardinalGaps === 'all_cardinals') {
+    segments.push({ id: 'oct_left_lower', x1: xLeft, y1: Pplus[240][1], x2: xLeft, y2: CY + d });
+    segments.push({ id: 'oct_left_upper', x1: xLeft, y1: CY - d,        x2: xLeft, y2: Pminus[300][1] });
+  } else {
+    segments.push({ id: 'oct_left_full',  x1: xLeft, y1: Pplus[240][1], x2: xLeft, y2: Pminus[300][1] });
+  }
+
+  segments.push({ id: 'oct_diag_tl', x1: Pplus[300][0], y1: Pplus[300][1], x2: Pminus[330][0], y2: Pminus[330][1] });
+
+  return { segments, Pminus, Pplus };
+}
+
+// Dial-front Cartesian coordinates, in millimetres. All profiles are at a 3H crown.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const INKSCAPE_NS = 'http://www.inkscape.org/namespaces/inkscape';
+const NUMBER_RE = /[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi;
+const SW_SOURCE = 'https://sellita.ch/images/documents/Catalogue2020_FR.pdf';
+const TMI_SOURCE = 'https://www.timemodule.com/upload/category/24/spec_sheet/NH35_SS.pdf';
+const MIYOTA9_SOURCE = 'https://miyotamovement.com/uploads/product/product_C0gp6HBJ5yn8VSLoQl.pdf';
+const MIYOTA8_SOURCE = 'https://miyotamovement.com/uploads/product/product_e1LVWPzublqQIDFgYh.pdf';
+const MOVEMENTS = {
+  sw210: { label: 'Sellita SW210-1 — current Podvig project', family: 'swiss', diameter: 33, hole: 2, feet: [[-11.60,3.78],[11.60,-3.78]], foot: .75, date: [8.85,2,2.70], dateAngle: 180, fittings: [1.50,.90], source: 'https://sellita.ch/index.php/en/movements', note: 'Current project: hand-wound SW210, using the specified SW200 dial interface. The 6H date requires the matching calendar disc. Alternative feet are references, not four simultaneous drill instructions.' },
+  sw200: { label: 'Sellita SW200-1 — Podvig project specification', family: 'swiss', diameter: 33, hole: 2, feet: [[-11.60,3.78],[11.60,-3.78]], foot: .75, date: [8.85,2,2.70], dateAngle: 180, fittings: [1.50,.90], source: SW_SOURCE, note: 'Preserves the supplied Podvig interface. The 6H date needs the matching calendar disc. Alternative 90° feet are reference geometry, not an instruction to drill all four.' },
+  sw300: { label: 'Sellita SW300-1 — slim automatic / date', family: 'swiss', diameter: 33, hole: 2, feet: [[-11.60,3.78],[11.60,-3.78]], foot: .75, date: [8.85,2,2.70], dateAngle: 90, fittings: [1.50,.90], source: 'https://sellita.ch/scripts/calibres/images/DocTec_SW300-1.pdf', note: 'Separate SW300 profile. These dial-foot and rectangular aperture dimensions agree with the SW300 drawing; case, stem and hand-stack heights must still be engineered separately.' },
+  sellitaCustom: { label: 'Other Sellita — custom interface / calibrate', family: 'custom', diameter: 33, hole: 2, feet: [[-11.60,3.78],[11.60,-3.78]], foot: .75, date: [8.85,2,2.70], dateAngle: 90, fittings: [1.50,.90], source: 'https://sellita.ch/index.php/en/movements', unverified: true, note: 'Custom Sellita starting template. Enter the exact calibre’s centre hole, feet, date and any open-heart geometry. SW200 defaults are not a compatibility claim for other Sellita movements.' },
+  sw260: { label: 'Sellita SW260-1 — shared project dial template', family: 'swiss', diameter: 33, hole: 2, feet: [[-11.60,3.78],[11.60,-3.78]], foot: .75, date: [8.85,2,2.70], dateAngle: 180, fittings: [1.50,.90], source: SW_SOURCE, note: 'Project dial interface only: SW260-1 has SMALL SECONDS at 6H (6.4 mm offset). Layer 10 remains a central-seconds design preview; this is not a complete SW260 dial or handset blueprint.' },
+  nh35: { label: 'TMI NH35A — date', family: 'nh', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: TMI_SOURCE, note: 'NH35A Dial-1 drawing: 10.55 mm date centre, 2.90 mm radial × 2.00 mm tangential opening. Crown rotation does not reprint calendar numerals.' },
+  nh34: { label: 'TMI NH34A — GMT / date interface', family: 'nh', diameter: 28.5, hole: 2.88, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: 'https://www.timemodule.com/upload/category/23/spec_sheet/NH34_SS.pdf', note: 'NH34A requires its larger 2.88 mm dial hole. This studio retains the three-hand artwork; a fourth GMT hand is not generated.' },
+  nh36: { label: 'TMI NH36A — date-only dial (day covered)', family: 'nh', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: 'https://www.timemodule.com/upload/category/25/spec_sheet/NH36_SS.pdf', note: 'Date-only layout; the day disc stays covered. Confirm the exact dial and calendar variant before manufacture.' },
+  nh37: { label: 'TMI NH37A — main dial interface', family: 'nh', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: 'https://www.timemodule.com/upload/category/26/spec_sheet/NH37_SS.pdf', note: 'Main dial interface only. The subsidiary 24-hour display is not generated; calibrate to the exact dial drawing.' },
+  nh38: { label: 'TMI NH38A — open heart / no date', family: 'nh', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: null, heart: [-6.827,.558,10], fittings: [1.50,.90], source: 'https://www.timemodule.com/upload/category/27/spec_sheet/NH38_SS.pdf', note: 'NH38A Dial drawing: maximum Ø10.00 mm open heart at (−6.827,+0.558) mm at a 3H crown. No calendar mechanism.' },
+  nh39: { label: 'TMI NH39A — open heart / main dial interface', family: 'nh', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: null, heart: [-6.827,.558,10], fittings: [1.50,.90], source: 'https://www.timemodule.com/upload/category/28/spec_sheet/NH39_SS.pdf', note: 'Open-heart main dial interface. The subsidiary 24-hour display is not generated; confirm its clearance separately.' },
+  nh25: { label: 'TMI NH25 — legacy family / calibrate', family: 'nh2', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: 'https://www.timemodule.com/en/download_support/', unverified: true, note: 'Legacy NH2x starting template inherited from NH35; NOT a verified NH25 drilling specification. Calibrate feet and aperture against your exact legacy drawing or part.' },
+  nh26: { label: 'TMI NH26 — legacy family / calibrate', family: 'nh2', diameter: 28.5, hole: 2.05, feet: [[9.672,-8.667],[-9.466,8.930]], foot: .64, date: [9.10,2,2.90], dateAngle: 90, fittings: [1.50,.90], source: 'https://www.timemodule.com/en/download_support/', unverified: true, note: 'Legacy date-only starting template inherited from NH35; day disc covered. NOT a verified NH26 drilling specification. Calibrate before manufacture.' },
+  miyota9015: { label: 'Miyota 9015 — premium 9-series / date', family: 'miyota9', diameter: 28.5, hole: 2, feet: [[-11.60,3.76],[11.85,-2.83]], foot: .70, date: [8.85,2,2.70], dateAngle: 90, fittings: [1.52,1], source: MIYOTA9_SOURCE, note: '9015-20A dial drawing. A 6H calendar variant exists, but requires the matching date disc; 9H/custom layouts require separate validation.' },
+  miyota9039: { label: 'Miyota 9039 — premium 9-series / no date', family: 'miyota9', diameter: 28.5, hole: 2, feet: [[-11.60,3.76],[11.85,-2.83]], foot: .70, date: null, fittings: [1.52,1], source: 'https://miyotamovement.com/uploads/product/product_wvsNLx6tfbemgQMaJP.pdf', note: '9039 has no date and no open-heart provision. A custom aperture is a design study, not evidence that the movement exposes a balance there.' },
+  miyota90s5: { label: 'Miyota 90S5 — premium 9-series / open heart', family: 'miyota9', diameter: 28.5, hole: 2, feet: [[-11.60,3.76],[11.85,-2.83]], foot: .70, date: null, heart: [7.40,4.70,8.60], fittings: [1.52,1], source: 'https://miyotamovement.com/uploads/product/product_fQKr6dC1qcPEJenVsR.pdf', note: '90S5 drawing: Ø8.60 mm open heart at (+7.40,+4.70) mm. Aperture rotates with crown orientation.' },
+  miyota8215: { label: 'Miyota 8215 — standard 8-series / date', family: 'miyota8', diameter: 28.5, hole: 2, feet: [[-9.87,-6],[9.32,6]], foot: .75, date: [8.85,2,2.70], dateAngle: 90, fittings: [1.52,1], source: MIYOTA8_SOURCE, note: '8215-33E dial drawing; feet differ from Miyota 9-series. Use the matching calendar disc for a 6H aperture.' },
+  miyota8205: { label: 'Miyota 8205 — 8-series date-only (day covered)', family: 'miyota8', diameter: 28.5, hole: 2, feet: [[-9.87,-6],[9.32,6]], foot: .75, date: [8.85,2,2.70], dateAngle: 90, fittings: [1.52,1], source: 'https://miyotamovement.com/uploads/product/product_IPGm1qWaQ3zUKMCHA8.pdf', note: '8205-3CE date-only layout. Day disc is covered; no day aperture is generated.' },
+  miyota82s0: { label: 'Miyota 82S0 — standard 8-series / open heart', family: 'miyota8', diameter: 28.5, hole: 2, feet: [[-9.87,-6],[9.32,6]], foot: .75, date: null, heart: [-7,-.70,9], fittings: [1.52,1], source: 'https://miyotamovement.com/uploads/product/product_fLUnS0DTbqcoxth1Vw.pdf', note: '82S0 drawing: Ø9.00 mm open heart at (−7.00,−0.70) mm at a 3H crown.' }
+};
+
+function polygonPath(points) {
+  return points.length ? points.map((p,i) => `${i ? 'L' : 'M'} ${fmt(p[0])} ${fmt(p[1])}`).join(' ') + ' Z' : '';
+}
+
+function lineToClosedPolygon(x1,y1,x2,y2,width,cap='butt') {
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy), hw=width/2;
+  if (!(width>0)) return '';
+  if (L<1e-12) return cap==='round' ? ellipsePath(x1,y1,hw,hw) : cap==='square' ? rectPath(x1-hw,y1-hw,width,width) : '';
+  const ux=dx/L, uy=dy/L, nx=-uy, ny=ux;
+  if(cap==='square') {x1-=hw*ux;y1-=hw*uy;x2+=hw*ux;y2+=hw*uy;}
+  const a=[x1+hw*nx,y1+hw*ny], b=[x2+hw*nx,y2+hw*ny], c=[x2-hw*nx,y2-hw*ny], d=[x1-hw*nx,y1-hw*ny];
+  // Clockwise semicircles go round the outside of each endpoint.
+  if(cap==='round') return `M ${fmt(d[0])} ${fmt(d[1])} L ${fmt(c[0])} ${fmt(c[1])} A ${fmt(hw)} ${fmt(hw)} 0 0 1 ${fmt(b[0])} ${fmt(b[1])} L ${fmt(a[0])} ${fmt(a[1])} A ${fmt(hw)} ${fmt(hw)} 0 0 1 ${fmt(d[0])} ${fmt(d[1])} Z`;
+  return polygonPath([a,b,c,d]);
+}
+
+function rectPath(x,y,w,h,reverse=false) {
+  const p=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+  return polygonPath(reverse ? p.reverse() : p);
+}
+function ellipsePath(cx,cy,rx,ry,reverse=false) {
+  const sweep=reverse ? 0 : 1;
+  return `M ${fmt(cx-rx)} ${fmt(cy)} A ${fmt(rx)} ${fmt(ry)} 0 1 ${sweep} ${fmt(cx+rx)} ${fmt(cy)} A ${fmt(rx)} ${fmt(ry)} 0 1 ${sweep} ${fmt(cx-rx)} ${fmt(cy)} Z`;
+}
+function annulusPath(cx,cy,r,width) {
+  return ellipsePath(cx,cy,r+width/2,r+width/2) + (r>width/2 ? ' '+ellipsePath(cx,cy,r-width/2,r-width/2,true) : '');
+}
+function framePath(x,y,w,h,width=.15) {
+  const q=width/2;
+  return rectPath(x-q,y-q,w+width,h+width) + ' ' + rectPath(x+q,y+q,w-width,h-width,true);
+}
+function rotatePoint(p,angle,cx=CX,cy=CY) {
+  const a=angle*Math.PI/180,c=Math.cos(a),s=Math.sin(a),x=p[0]-cx,y=p[1]-cy;
+  return [cx+c*x-s*y,cy+s*x+c*y];
+}
+function scaleArtworkPath(d,k) {
+  // Stencil / hand paths contain absolute M/L/C pairs only; never scale an arbor diameter.
+  return d.replace(NUMBER_RE,n=>fmt(20+(Number(n)-20)*k));
+}
+
+// Six closed Cyrillic contours, designed at a physical 0.18 mm stroke weight.
+function closedPodvigGlyphs() {
+  return [
+    polygonPath([[16.76,14.20],[16.76,12.86],[17.84,12.86],[17.84,14.20],[17.66,14.20],[17.66,13.04],[16.94,13.04],[16.94,14.20]]),
+    ellipsePath(18.50,13.75,.49,.54)+' '+ellipsePath(18.50,13.75,.31,.36,true),
+    'M 19.0900 14.4800 L 19.0900 14.1100 L 19.2300 14.1100 L 19.3700 13.2100 L 20.0500 13.2100 L 20.0500 14.1100 L 20.2300 14.1100 L 20.2300 14.4800 L 20.0500 14.4800 L 20.0500 14.2900 L 19.2700 14.2900 L 19.2700 14.4800 Z M 19.4122 14.1100 L 19.8700 14.1100 L 19.8700 13.3900 L 19.5242 13.3900 Z',
+    'M 20.4300 14.2900 L 20.4300 13.2100 L 20.9500 13.2100 C 21.3800 13.2100 21.3800 13.6500 21.1700 13.7500 C 21.4300 13.8700 21.3900 14.2900 20.9600 14.2900 Z M 20.6100 13.6600 L 20.9500 13.6600 C 21.1400 13.6600 21.1400 13.3900 20.9500 13.3900 L 20.6100 13.3900 Z M 20.6100 14.1100 L 20.9600 14.1100 C 21.1600 14.1100 21.1600 13.8400 20.9600 13.8400 L 20.6100 13.8400 Z',
+    // The diagonal's perpendicular thickness is .18, not its horizontal projection.
+    polygonPath([[21.49,13.21],[21.67,13.21],[21.67,13.9079],[22.21,13.2479],[22.21,13.21],[22.39,13.21],[22.39,14.20],[22.21,14.20],[22.21,13.5321],[21.67,14.1921],[21.67,14.20],[21.49,14.20]]),
+    polygonPath([[22.63,14.20],[22.63,13.21],[23.32,13.21],[23.32,13.39],[22.81,13.39],[22.81,14.20]])
+  ];
+}
+
+function movementGeometry(st) {
+  const p=MOVEMENTS[st.movement], delta=st.crownAngle-90;
+  const feet=st.feet.map(f=>rotatePoint([CX+f[0],CY+f[1]],delta));
+  const altFeet=p.family==='swiss' ? st.feet.map(f=>rotatePoint([CX+f[0],CY+f[1]],delta+90)) : [];
+  const dateEnabled=st.datePosition!=='none';
+  const angle=st.datePosition==='follow' ? ((p.dateAngle??90)+delta+360)%360 : st.dateAngle;
+  const x=CX-st.dateWidth/2,y=CY+st.dateInner;
+  const dateCorners=[[x,y],[x+st.dateWidth,y],[x+st.dateWidth,y+st.dateHeight],[x,y+st.dateHeight]].map(v=>rotatePoint(v,angle-180));
+  const heartCenter=rotatePoint([CX+st.heartX,CY+st.heartY],delta);
+  return {profile:p,scale:st.dialDiameter/33,dialR:st.dialDiameter/2,holeR:st.centerHoleDiameter/2,feet,altFeet,footR:st.footDiameter/2,
+    date:dateEnabled ? {x,y,w:st.dateWidth,h:st.dateHeight,angle,corners:dateCorners,path:polygonPath(dateCorners)} : null,
+    heart:st.openHeartEnabled ? {cx:heartCenter[0],cy:heartCenter[1],r:st.heartDiameter/2,path:ellipsePath(...heartCenter,st.heartDiameter/2,st.heartDiameter/2)} : null};
+}
+
+function engineeringIssues(st,g=movementGeometry(st)) {
+  const errors=[],warnings=[];
+  if(g.dialR>19.9 || g.dialR<2.5) errors.push('Diameter must be 5–39.8 mm on the fixed 40 mm artboard.');
+  if(g.holeR>=g.dialR) errors.push('The centre hole is larger than the dial.');
+  const cuts=[{name:'Centre hole',cx:CX,cy:CY,r:g.holeR},...(g.heart?[{name:'Open heart',...g.heart}]:[])];
+  for(const cut of cuts) if(Math.hypot(cut.cx-CX,cut.cy-CY)+cut.r>=g.dialR-.1) errors.push(`${cut.name} reaches the dial perimeter; no brass web remains.`);
+  for(const f of g.feet) if(Math.hypot(f[0]-CX,f[1]-CY)+g.footR>=g.dialR-.1) errors.push('A dial foot reaches the perimeter; increase diameter or calibrate feet.');
+  if(g.date && g.date.corners.some(v=>Math.hypot(v[0]-CX,v[1]-CY)>=g.dialR-.1)) errors.push('The date aperture reaches the dial perimeter.');
+  if(g.heart && Math.hypot(g.heart.cx-CX,g.heart.cy-CY)<=g.heart.r+g.holeR+.1) errors.push('Open heart overlaps the centre hole / minimum brass web.');
+  const pointInDate=(v,pad=0)=>{
+    if(!g.date)return false;
+    const q=rotatePoint(v,180-g.date.angle);
+    return q[0]>=g.date.x-pad && q[0]<=g.date.x+g.date.w+pad && q[1]>=g.date.y-pad && q[1]<=g.date.y+g.date.h+pad;
+  };
+  if(Math.hypot(g.feet[0][0]-g.feet[1][0],g.feet[0][1]-g.feet[1][1])<=2*g.footR+.1)errors.push('The two dial feet overlap.');
+  for(const f of g.feet) {
+    if(Math.hypot(f[0]-CX,f[1]-CY)<=g.holeR+g.footR+.1)errors.push('A dial foot overlaps the centre hole.');
+    if(g.heart && Math.hypot(f[0]-g.heart.cx,f[1]-g.heart.cy)<=g.footR+g.heart.r+.1) errors.push('A dial foot overlaps the open-heart aperture.');
+    if(pointInDate(f,g.footR+.1)) errors.push('A dial foot overlaps the date aperture.');
+  }
+  if(g.date && g.heart) {
+    const q=rotatePoint([g.heart.cx,g.heart.cy],180-g.date.angle), dx=Math.max(g.date.x-q[0],0,q[0]-g.date.x-g.date.w),dy=Math.max(g.date.y-q[1],0,q[1]-g.date.y-g.date.h);
+    if(Math.hypot(dx,dy)<=g.heart.r+.1) errors.push('Open heart overlaps the date aperture.');
+  }
+  if(g.profile.unverified) warnings.push('This is an unverified starting template: calibrate against the exact movement.');
+  if(st.movement==='sw260') warnings.push('SW260-1 uses small seconds; central seconds is a preserved design preview only.');
+  if(g.date && !g.profile.date) warnings.push('This movement has no date mechanism; the aperture is a custom design study.');
+  if(g.date && Math.abs(((g.date.angle-((g.profile.dateAngle??90)+st.crownAngle-90)+540)%360)-180)>.01) warnings.push('Date position differs from the movement preset; a matching calendar disc / numeral orientation is required.');
+  if(Math.abs(st.crownAngle-90)>.01) warnings.push('Crown rotation moves the feet and balance; confirm calendar indexing and numeral orientation for this crown variant.');
+  if(g.heart && !g.profile.heart) warnings.push('No open-heart mechanism is specified for this calibre. Confirm that a balance is exposed at this location.');
+  if(g.heart && g.profile.heart && [st.heartX,st.heartY,st.heartDiameter].some((v,i)=>Math.abs(v-g.profile.heart[i])>.001)) warnings.push('Open-heart aperture differs from the manufacturer preset.');
+  if(g.profile.date && [st.dateInner,st.dateWidth,st.dateHeight].some((v,i)=>Math.abs(v-g.profile.date[i])>.001)) warnings.push('Date dimensions differ from the movement preset.');
+  if(st.centerHoleDiameter!==g.profile.hole || st.footDiameter!==g.profile.foot || st.feet.some((v,i)=>v.some((n,j)=>Math.abs(n-g.profile.feet[i][j])>.0001))) warnings.push('Movement hole / foot calibration has been edited.');
+  return {errors:[...new Set(errors)],warnings:[...new Set(warnings)]};
+}
+
+function markerGeometry(st,g=movementGeometry(st)) {
+  const s=g.scale,outer=[],inner=[];
+  for(const h of [1,2,3,4,5,7,8,9,10,11]) outer.push({id:`outer_pip_${outer.length+1}`,d:rotatedRectPath(CX,CY,14.40*s,15.25*s,.85*s,h*30)});
+  outer.push({id:'outer_pip_11',d:rotatedRectPath(CX,CY,13.95*s,15.25*s,1.08*s,0)});
+  const bottomDate=g.date && Math.abs(g.date.angle-180)<.01;
+  const in6=Math.max(12.05*s,bottomDate ? st.dateInner+st.dateHeight+.45 : 0);
+  if(in6<15.25*s-.05) inner.push({id:'hour_baton_1',d:rotatedRectPath(CX,CY,in6,15.25*s,1.08*s,180)});
+  for(const h of [1,2,4,5,7,8,10,11]) inner.push({id:`hour_baton_${[1,2,4,5,7,8,10,11].indexOf(h)+2}`,d:rotatedRectPath(CX,CY,10.65*s,13.90*s,1.15*s,h*30)});
+  const numerals=[STENCIL_12,STENCIL_3,STENCIL_9].map((d,i)=>({id:`numeral_${[12,3,9][i]}_stencil`,d:scaleArtworkPath(d,s)}));
+  return {outer:outer.filter(m=>decorationFits(m.d,g,.10)),inner:inner.filter(m=>decorationFits(m.d,g,.10)),numerals:numerals.filter(m=>decorationFits(m.d,g,.10))};
+}
+
+function decorationFits(d,g,pad=.10) {
+  const paths=flattenPath(d,.003), points=paths.flatMap(p=>p.points);
+  if(!points.length)return true;
+  // Bounding boxes are conservative: a whole mark is omitted, never cut into a disconnected print island.
+  const bounds=ps=>[Math.min(...ps.map(p=>p[0])),Math.min(...ps.map(p=>p[1])),Math.max(...ps.map(p=>p[0])),Math.max(...ps.map(p=>p[1]))];
+  const circleHit=(ps,cx,cy,r)=>{const b=bounds(ps);return Math.hypot(Math.max(b[0]-cx,0,cx-b[2]),Math.max(b[1]-cy,0,cy-b[3]))<r+pad;};
+  if(g.heart && circleHit(points,g.heart.cx,g.heart.cy,g.heart.r))return false;
+  if(g.date) {
+    const b=bounds(points.map(p=>rotatePoint(p,180-g.date.angle)));
+    if(b[0]<g.date.x+g.date.w+pad && b[2]>g.date.x-pad && b[1]<g.date.y+g.date.h+pad && b[3]>g.date.y-pad)return false;
+  }
+  return true;
+}
+
+// Native, dependency-free SVG path flattening for offsetting decorative strokes.
+// Manufacturing lines / frames / rings remain analytic; Bezier stroke edges use <=0.001 mm chords.
+function flattenPath(d,tolerance=.001) {
+  const t=d.match(/[a-zA-Z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/g)||[];
+  const result=[];let i=0,cmd='',cur=[0,0],start=[0,0],part=null;
+  const push=p=>{if(!part){part={points:[cur],closed:false};result.push(part);}if(Math.hypot(p[0]-cur[0],p[1]-cur[1])>1e-10)part.points.push(p);cur=p;};
+  const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  const dist=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);return L ? Math.abs(dx*(a[1]-p[1])-(a[0]-p[0])*dy)/L : Math.hypot(p[0]-a[0],p[1]-a[1]);};
+  function cubic(a,b,c,e,depth=0) {
+    if(depth>18 || Math.max(dist(b,a,e),dist(c,a,e))<=tolerance){push(e);return;}
+    const ab=mid(a,b),bc=mid(b,c),ce=mid(c,e),abc=mid(ab,bc),bce=mid(bc,ce),m=mid(abc,bce);
+    cubic(a,ab,abc,m,depth+1);cubic(m,bce,ce,e,depth+1);
+  }
+  function arc(rx,ry,rot,large,sweep,end) {
+    rx=Math.abs(rx);ry=Math.abs(ry);
+    if(!rx||!ry){push(end);return;}
+    const a=rot*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),dx=(cur[0]-end[0])/2,dy=(cur[1]-end[1])/2,xp=ca*dx+sa*dy,yp=-sa*dx+ca*dy;
+    const correction=Math.max(1,Math.sqrt(xp*xp/(rx*rx)+yp*yp/(ry*ry)));rx*=correction;ry*=correction;
+    const factor=(large===sweep ? -1 : 1)*Math.sqrt(Math.max(0,(rx*rx*ry*ry-rx*rx*yp*yp-ry*ry*xp*xp)/(rx*rx*yp*yp+ry*ry*xp*xp || 1)));
+    const cp=[factor*rx*yp/ry,-factor*ry*xp/rx],center=[ca*cp[0]-sa*cp[1]+(cur[0]+end[0])/2,sa*cp[0]+ca*cp[1]+(cur[1]+end[1])/2];
+    const theta=Math.atan2((yp-cp[1])/ry,(xp-cp[0])/rx);let delta=Math.atan2((-yp-cp[1])/ry,(-xp-cp[0])/rx)-theta;
+    if(sweep&&delta<0)delta+=2*Math.PI;if(!sweep&&delta>0)delta-=2*Math.PI;
+    const steps=Math.max(2,Math.ceil(Math.abs(delta)/(2*Math.acos(Math.max(-1,1-tolerance/Math.max(rx,ry))))));
+    for(let j=1;j<=steps;j++){const ang=theta+delta*j/steps;push([center[0]+ca*rx*Math.cos(ang)-sa*ry*Math.sin(ang),center[1]+sa*rx*Math.cos(ang)+ca*ry*Math.sin(ang)]);}
+    cur=end;part.points[part.points.length-1]=end;
+  }
+  while(i<t.length) {
+    if(/^[a-z]$/i.test(t[i]))cmd=t[i++];
+    const upper=cmd.toUpperCase(),rel=cmd!==upper,base=[...cur];
+    const num=()=>Number(t[i++]),point=()=>{const p=[num(),num()];return rel ? [p[0]+base[0],p[1]+base[1]] : p;};
+    if(upper==='M'){cur=point();start=[...cur];part={points:[[...cur]],closed:false};result.push(part);cmd=rel?'l':'L';}
+    else if(upper==='L')push(point());
+    else if(upper==='H')push([num()+(rel?base[0]:0),cur[1]]);
+    else if(upper==='V')push([cur[0],num()+(rel?base[1]:0)]);
+    else if(upper==='C'){const b=point(),c=point(),end=point();cubic(base,b,c,end);}
+    else if(upper==='Q'){const b=point(),end=point();cubic(base,[base[0]+2*(b[0]-base[0])/3,base[1]+2*(b[1]-base[1])/3],[end[0]+2*(b[0]-end[0])/3,end[1]+2*(b[1]-end[1])/3],end);}
+    else if(upper==='A'){const rx=num(),ry=num(),rot=num(),large=num(),sweep=num(),end=point();arc(rx,ry,rot,large,sweep,end);}
+    else if(upper==='Z'){part.closed=true;cur=[...start];if(part.points.length>1&&Math.hypot(...part.points[0].map((v,j)=>v-part.points.at(-1)[j]))<1e-9)part.points.pop();cmd='';}
+    else throw new Error(`Unsupported SVG command ${cmd}; no silent CAD conversion.`);
+  }
+  return result;
+}
+
+function polylineStroke(points,width,closed=false,cap='butt',join='round',miterLimit=4) {
+  const p=points.filter((v,i)=>!i||Math.hypot(v[0]-points[i-1][0],v[1]-points[i-1][1])>1e-9);
+  if(p.length<2)return p.length ? lineToClosedPolygon(...p[0],...p[0],width,cap) : '';
+  const hw=width/2,dirs=[];
+  for(let i=0;i<(closed?p.length:p.length-1);i++){const a=p[i],b=p[(i+1)%p.length],l=Math.hypot(b[0]-a[0],b[1]-a[1]);dirs.push([(b[0]-a[0])/l,(b[1]-a[1])/l]);}
+  function side(sign) {
+    const out=[];
+    for(let i=0;i<p.length;i++) {
+      const v=p[i],prev=dirs[(i-1+dirs.length)%dirs.length],next=dirs[i%dirs.length];
+      if(!closed&&(i===0||i===p.length-1)){
+        const d=i===0?dirs[0]:dirs.at(-1),ext=cap==='square'?(i===0?-hw:hw):0;
+        out.push([v[0]-d[1]*hw*sign+d[0]*ext,v[1]+d[0]*hw*sign+d[1]*ext]);continue;
+      }
+      const a=[v[0]-prev[1]*hw*sign,v[1]+prev[0]*hw*sign],b=[v[0]-next[1]*hw*sign,v[1]+next[0]*hw*sign],cross=prev[0]*next[1]-prev[1]*next[0],dot=prev[0]*next[0]+prev[1]*next[1];
+      if(Math.abs(cross)<1e-9){out.push(b);continue;}
+      const f=((b[0]-a[0])*next[1]-(b[1]-a[1])*next[0])/cross,intersection=[a[0]+f*prev[0],a[1]+f*prev[1]],outer=cross*sign<0;
+      if(!outer || (join==='miter'&&Math.hypot(intersection[0]-v[0],intersection[1]-v[1])<=miterLimit*hw))out.push(intersection);
+      else if(join==='round') {
+        const a0=Math.atan2(a[1]-v[1],a[0]-v[0]);let da=Math.atan2(b[1]-v[1],b[0]-v[0])-a0;
+        if(cross>0&&da<0)da+=2*Math.PI;if(cross<0&&da>0)da-=2*Math.PI;
+        const steps=Math.max(1,Math.ceil(Math.abs(da)/(2*Math.acos(Math.max(-1,1-.0005/hw)))));
+        for(let k=0;k<=steps;k++)out.push([v[0]+hw*Math.cos(a0+da*k/steps),v[1]+hw*Math.sin(a0+da*k/steps)]);
+      } else out.push(a,b);
+    }
+    return out;
+  }
+  const left=side(1),right=side(-1).reverse();
+  if(closed)return polygonPath(left)+' '+polygonPath(right);
+  let d=left.map((v,i)=>`${i?'L':'M'} ${fmt(v[0])} ${fmt(v[1])}`).join(' ');
+  const end=right[0];d+=cap==='round'?` A ${fmt(hw)} ${fmt(hw)} 0 0 0 ${fmt(end[0])} ${fmt(end[1])}`:` L ${fmt(end[0])} ${fmt(end[1])}`;
+  d+=right.slice(1).map(v=>` L ${fmt(v[0])} ${fmt(v[1])}`).join('');
+  const first=left[0];d+=cap==='round'?` A ${fmt(hw)} ${fmt(hw)} 0 0 0 ${fmt(first[0])} ${fmt(first[1])}`:'';
+  return d+' Z';
+}
+
+function svgElement(doc,name,attrs={}) {const el=doc.createElementNS(SVG_NS,name);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));return el;}
+function inherited(el,name,fallback) {for(let n=el;n&&n.nodeType===1;n=n.parentNode){if(n.hasAttribute(name))return n.getAttribute(name);}return fallback;}
+
+function dashedStroke(parts,width,cap,join,dashes) {
+  let pattern=dashes.map(Number).filter(n=>n>0);
+  if(!pattern.length)return '';
+  if(pattern.length%2)pattern=[...pattern,...pattern];
+  let outline='';
+  for(const part of parts) {
+    const points=part.closed?[...part.points,part.points[0]]:part.points;
+    let index=0,remaining=pattern[0],chain=[];
+    function flush(){if(chain.length>1)outline+=polylineStroke(chain,width,false,cap,join)+' ';chain=[];}
+    for(let i=1;i<points.length;i++) {
+      const a=points[i-1],b=points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);let used=0;
+      if(length<1e-10)continue;
+      while(used<length-1e-10) {
+        const take=Math.min(remaining,length-used),from=[a[0]+(b[0]-a[0])*used/length,a[1]+(b[1]-a[1])*used/length];used+=take;
+        const to=[a[0]+(b[0]-a[0])*used/length,a[1]+(b[1]-a[1])*used/length];
+        if(index%2===0){if(!chain.length)chain.push(from);chain.push(to);}
+        remaining-=take;
+        if(remaining<1e-10){flush();index=(index+1)%pattern.length;remaining=pattern[index];}
+      }
+    }
+    flush();
+  }
+  return outline.trim();
+}
+
+function outlineStrokes(doc) {
+  for(const el of [...doc.querySelectorAll('line,rect,circle,ellipse,polygon,polyline,path')]) {
+    if(el.closest('defs'))continue;
+    const stroke=inherited(el,'stroke','none'),width=Number(inherited(el,'stroke-width','1'));
+    if(stroke==='none'||!width)continue;
+    const fill=inherited(el,'fill','black'),cap=inherited(el,'stroke-linecap','butt'),join=inherited(el,'stroke-linejoin','miter'),tag=el.localName;
+    const n=k=>Number(el.getAttribute(k)||0);let base='',edge='';
+    if(tag==='line')edge=lineToClosedPolygon(n('x1'),n('y1'),n('x2'),n('y2'),width,cap);
+    else if(tag==='circle'){base=ellipsePath(n('cx'),n('cy'),n('r'),n('r'));edge=annulusPath(n('cx'),n('cy'),n('r'),width);}
+    else if(tag==='ellipse'){base=ellipsePath(n('cx'),n('cy'),n('rx'),n('ry'));edge=ellipsePath(n('cx'),n('cy'),n('rx')+width/2,n('ry')+width/2)+' '+ellipsePath(n('cx'),n('cy'),Math.max(.0001,n('rx')-width/2),Math.max(.0001,n('ry')-width/2),true);}
+    else if(tag==='rect') {
+      const x=n('x'),y=n('y'),w=n('width'),h=n('height'),rx=Math.min(n('rx'),w/2),ry=Math.min(n('ry')||rx,h/2);
+      base=rx ? `M ${fmt(x+rx)} ${fmt(y)} L ${fmt(x+w-rx)} ${fmt(y)} A ${fmt(rx)} ${fmt(ry)} 0 0 1 ${fmt(x+w)} ${fmt(y+ry)} L ${fmt(x+w)} ${fmt(y+h-ry)} A ${fmt(rx)} ${fmt(ry)} 0 0 1 ${fmt(x+w-rx)} ${fmt(y+h)} L ${fmt(x+rx)} ${fmt(y+h)} A ${fmt(rx)} ${fmt(ry)} 0 0 1 ${fmt(x)} ${fmt(y+h-ry)} L ${fmt(x)} ${fmt(y+ry)} A ${fmt(rx)} ${fmt(ry)} 0 0 1 ${fmt(x+rx)} ${fmt(y)} Z` : rectPath(x,y,w,h);
+      edge=rx ? flattenPath(base).map(p=>polylineStroke(p.points,width,true,cap,join)).join(' ') : framePath(x,y,w,h,width);
+    } else {
+      if(tag==='path')base=el.getAttribute('d');
+      else {const a=(el.getAttribute('points').match(NUMBER_RE)||[]).map(Number),p=[];for(let i=0;i<a.length;i+=2)p.push([a[i],a[i+1]]);base=polygonPath(p);if(tag==='polyline')base=base.replace(/ Z$/,'');}
+      edge=flattenPath(base).map(p=>polylineStroke(p.points,width,p.closed,cap,join,Number(inherited(el,'stroke-miterlimit',4)))).join(' ');
+    }
+    const dash=inherited(el,'stroke-dasharray','none');
+    if(dash!=='none') {
+      const parts=tag==='line'?[{points:[[n('x1'),n('y1')],[n('x2'),n('y2')]],closed:false}]:flattenPath(base);
+      edge=dashedStroke(parts,width,cap,join,dash.split(/[ ,]+/));
+    }
+    const group=svgElement(doc,'g');
+    for(const a of [...el.attributes])if(!['d','x','y','x1','x2','y1','y2','cx','cy','r','rx','ry','width','height','points','stroke','stroke-width','stroke-linecap','stroke-linejoin','stroke-dasharray'].includes(a.name))group.setAttribute(a.name,a.value);
+    group.setAttribute('stroke','none');group.removeAttribute('fill-rule');
+    if(fill!=='none'&&tag!=='line'&&base&&!el.id.startsWith('drone_rotor_'))group.append(svgElement(doc,'path',{d:base,fill,stroke:'none','fill-rule':inherited(el,'fill-rule','nonzero')}));
+    if(edge)group.append(svgElement(doc,'path',{d:edge,fill:stroke,stroke:'none','fill-rule':'nonzero'}));
+    // Analytic opposite-winding circles/frames, and offset loops, preserve counters under nonzero winding.
+    if(el.id==='date_window_border'||el.id.startsWith('drone_rotor_'))group.lastElementChild?.setAttribute('fill-rule','evenodd');
+    if(group.children.length===1) {
+      const path=group.firstElementChild;
+      for(const a of [...group.attributes])if(!['fill','stroke'].includes(a.name))path.setAttribute(a.name,a.value);
+      el.replaceWith(path);
+    } else el.replaceWith(group);
+  }
+  for(const el of doc.querySelectorAll('[stroke]'))el.setAttribute('stroke','none');
+}
+
+function formatSVG(doc) {
+  const scalar=new Set(['x','y','x1','y1','x2','y2','cx','cy','r','rx','ry','stroke-width','stroke-miterlimit','font-size','letter-spacing','stdDeviation']);
+  for(const el of doc.querySelectorAll('*'))for(const a of [...el.attributes]) {
+    if(scalar.has(a.name)&&/^[-+\d.]/.test(a.value)&&!a.value.endsWith('%'))el.setAttribute(a.name,fmt(a.value));
+    else if(['width','height'].includes(a.name)&&el.localName!=='svg'&&!a.value.endsWith('%'))el.setAttribute(a.name,fmt(a.value));
+    else if(['points','transform','stroke-dasharray'].includes(a.name))el.setAttribute(a.name,a.value.replace(NUMBER_RE,n=>fmt(n)));
+  }
+  return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n'+new XMLSerializer().serializeToString(doc.documentElement);
+}
+
+function buildFeetMarkup(st,g) {
+  const circles=(feet,prefix,dashed=false)=>feet.map((p,i)=>`<circle id="${g.profile.family==='swiss' ? `dial_foot_${i+1}_${dashed?'6h_rotated':'3h_ref'}` : `${prefix}_${i+1}`}" cx="${fmt(p[0])}" cy="${fmt(p[1])}" r="${fmt(g.footR)}" ${dashed?'stroke-dasharray="0.15,0.10"':''} />`).join('');
+  const crown=polar(CX,CY,g.dialR-.1,st.crownAngle),crownIn=polar(CX,CY,g.dialR-1,st.crownAngle);
+  return `<g id="sellita_sw200_dial_feet_ref" display="${st.showDialFeet?'inline':'none'}" fill="none" stroke="#ef4444" stroke-width="0.06">
+    <g id="active_movement_feet">${circles(g.feet,'dial_foot_active')}</g>
+    <g id="alternative_90deg_feet_ref">${circles(g.altFeet,'dial_foot_alternative',true)}</g>
+    <path id="crown_axis_reference" d="M ${fmt(crownIn[0])} ${fmt(crownIn[1])} L ${fmt(crown[0])} ${fmt(crown[1])}" />
+  </g>`;
+}
+
+function buildDateMarkup(st,g) {
+  if(!g.date)return '<g id="date_window_frame_group" />';
+  const d=g.date,mid=rotatePoint([CX,d.y+d.h/2],d.angle-180);
+  return `<g id="date_window_frame_group">
+    <path id="date_disc_backing_preview" d="${d.path}" fill="#141518" />
+    <g transform="rotate(${fmt(d.angle-180)} ${fmt(CX)} ${fmt(CY)})">
+      ${st.cadOutlineMode ? `<path id="date_window_border" d="${framePath(d.x-.10,d.y-.10,d.w+.20,d.h+.20)}" fill="#DDD8C7" fill-rule="evenodd" stroke="none"` : `<rect id="date_window_border" x="${fmt(d.x-.10)}" y="${fmt(d.y-.10)}" width="${fmt(d.w+.20)}" height="${fmt(d.h+.20)}" fill="none" stroke="#DDD8C7" stroke-width="0.15"`} display="${st.showDateFrame?'inline':'none'}" />
+    </g>
+    <g id="date_numeral_16_preview" transform="translate(${fmt(mid[0]-20)} ${fmt(mid[1]-30.20)})" fill="none" stroke="#EAE6D7" stroke-width="0.19" stroke-linecap="round" stroke-linejoin="round">
+      <path id="date_digit_1" d="M 19.2600 29.5600 L 19.4800 29.3000 L 19.4800 31.0800" />
+      <path id="date_digit_6" d="M 20.6800 29.5200 C 20.5800 29.3400 20.4200 29.3000 20.2600 29.3300 C 20.0000 29.4000 19.9200 29.7200 19.9200 30.2200 C 19.9200 30.7800 20.0800 31.0800 20.3600 31.0800 C 20.6200 31.0800 20.7800 30.8400 20.7800 30.5200 C 20.7800 30.2000 20.6000 30.0200 20.3600 30.0200 C 20.1200 30.0200 19.9600 30.1800 19.9400 30.4200" />
+    </g>
+  </g>`;
+}
+
+function buildCompleteSVG(st) {
+  const g=movementGeometry(st),doc=new DOMParser().parseFromString(buildBaseSVG(st),'image/svg+xml');
+  if(doc.querySelector('parsererror'))throw new Error('SVG template did not parse.');
+  const root=doc.documentElement;
+  root.setAttribute('id',`podvig_${st.movement}_dial`);
+  doc.querySelector('title').textContent=`Podvig 02 Night Relay — ${fmt(st.dialDiameter)} mm — ${g.profile.label}`;
+  doc.querySelector('desc').textContent=`1 SVG unit = 1 mm. Arbor (20.0000,20.0000). Artwork scale ${fmt(g.scale)}. Movement geometry remains unscaled. ${g.profile.note}`;
+  const metadata=svgElement(doc,'metadata',{id:'engineering_metadata'});
+  metadata.textContent=JSON.stringify({version:3,units:'mm',movement:st.movement,dialDiameter:fmt(st.dialDiameter),crownAngle:fmt(st.crownAngle),date:g.date?{angle:fmt(g.date.angle),inner:fmt(st.dateInner),tangential:fmt(st.dateWidth),radial:fmt(st.dateHeight)}:null,feet:g.feet.map(p=>p.map(fmt)),footDiameter:fmt(st.footDiameter),heart:g.heart?{cx:fmt(g.heart.cx),cy:fmt(g.heart.cy),r:fmt(g.heart.r)}:null,issues:engineeringIssues(st,g),source:g.profile.source});
+  root.prepend(metadata);
+  doc.querySelector('#layer1_dial_base').setAttributeNS(INKSCAPE_NS,'inkscape:label',`Layer 1: Dial Base (${st.dialDiameter.toFixed(2)} mm / ${st.movement})`);
+  const plate=doc.querySelector('#dial_plate_33mm_cutout, #dial_plate_33mm_sandwich_cutout');
+  // Lower sandwich plate retains mechanical openings; lune light cannot fill an arbor/date hole.
+  const lower=doc.querySelector('#sandwich_lower_lume_disc');
+  if(lower){const path=svgElement(doc,'path',{id:lower.id,d:ellipsePath(CX,CY,g.dialR-.05,g.dialR-.05)+' '+ellipsePath(CX,CY,g.holeR,g.holeR,true)+(g.date?' '+g.date.path:'')+(g.heart?' '+g.heart.path:''),fill:lower.getAttribute('fill'),'fill-rule':'evenodd'});lower.replaceWith(path);}
+  for(const id of ['dialFlatMatteGrad','dialFumeGrad'])doc.getElementById(id).setAttribute('r',fmt(g.dialR));
+  // The non-cardinal gap stays a physical width, independent of artwork scale.
+  const oct=doc.getElementById('hour_aligned_octagon');
+  for(const line of [...oct.children]) {
+    const d=`M ${line.getAttribute('x1')} ${line.getAttribute('y1')} L ${line.getAttribute('x2')} ${line.getAttribute('y2')}`;
+    if(!decorationFits(d,g,.27))line.remove();
+  }
+  const word=doc.getElementById('podvig_vector_glyphs');
+  if(st.cadOutlineMode) {
+    word.setAttribute('fill','#DDD8C7');word.setAttribute('stroke','none');word.setAttribute('fill-rule','evenodd');
+    [...word.children].forEach((p,i)=>p.setAttribute('d',closedPodvigGlyphs()[i]));
+  }
+  // Apply artwork scaling to logo/wordmark coordinates, leaving stroke weights physical.
+  for(const id of ['logo_emblem_12h_metallic','brand_wordmark_podvig']) {
+    const group=doc.getElementById(id);
+    for(const path of group.querySelectorAll('path')) {
+      // The closed wordmark includes arcs: scale those through its own transform, then outline before that transform is applied.
+      if(id==='brand_wordmark_podvig' && st.cadOutlineMode)continue;
+      path.setAttribute('d',id==='brand_wordmark_podvig' ? scalePath(path.getAttribute('d'),g.scale) : translateArtworkPath(path.getAttribute('d'),0,8.25*(1-g.scale)));
+    }
+    for(const poly of group.querySelectorAll('polygon'))poly.setAttribute('points',translateArtworkPath(poly.getAttribute('points'),0,8.25*(1-g.scale)));
+    if(id==='brand_wordmark_podvig'&&st.cadOutlineMode) {
+      [...word.children].forEach(p=>p.setAttribute('d',scalePath(p.getAttribute('d'),g.scale)));
+    }
+    const paths=[...group.querySelectorAll('path,polygon')];
+    if((id==='logo_emblem_12h_metallic'&&!emblemFits(g))||paths.some(p=>!decorationFits(p.localName==='polygon' ? 'M '+p.getAttribute('points').replaceAll(',',' ')+' Z' : p.getAttribute('d'),g,.1)))group.setAttribute('display','none');
+  }
+  const ticks=doc.getElementById('minute_track_ticks');
+  for(const line of [...ticks.children]) {
+    const m=Number(line.id.split('_').at(-1)),d=rotatedRectPath(CX,CY,14.40*g.scale,15.25*g.scale,.18,m*6);
+    if(!decorationFits(d,g,.1)){line.remove();continue;}
+    if(st.cadOutlineMode)line.replaceWith(svgElement(doc,'path',{id:line.id,d,fill:'#E5E1D2',stroke:'none'}));
+  }
+  // Scale hand silhouettes, preserving physical bosses and manufacturer fitting references.
+  for(let layer=4;layer<=10;layer++) {
+    const group=doc.querySelector(`[id^="layer${layer}_"]`);
+    for(const el of group.querySelectorAll('path,line,rect,circle')) {
+      if(el.localName==='path')el.setAttribute('d',scaleArtworkPath(el.getAttribute('d'),g.scale));
+      else for(const a of ['x','y','x1','x2','y1','y2','cx','cy'])if(el.hasAttribute(a))el.setAttribute(a,fmt(20+(Number(el.getAttribute(a))-20)*g.scale));
+      if(el.localName==='rect')for(const a of ['width','height','rx','ry'])if(el.hasAttribute(a))el.setAttribute(a,fmt(Number(el.getAttribute(a))*g.scale));
+      if(el.id.includes('pipe_hole'))el.setAttribute('r',fmt(g.profile.fittings[0]/2));
+      if(el.id.includes('pinion_hole'))el.setAttribute('r',fmt(g.profile.fittings[1]/2));
+      if(el.id.startsWith('drone_rotor_')||el.id.startsWith('drone_pin_'))el.setAttribute('r',fmt(Number(el.getAttribute('r'))*g.scale));
+    }
+  }
+  const dateGuide=doc.querySelector('#cad_verification_guides > rect');
+  if(dateGuide){if(!g.date)dateGuide.remove();else dateGuide.setAttribute('transform',`rotate(${fmt(g.date.angle-180)} 20.0000 20.0000)`);}
+  if(st.cadOutlineMode)outlineStrokes(doc);
+  return formatSVG(doc);
+}
+
+function translateArtworkPath(d,dx,dy) {
+  let i=0;return d.replace(NUMBER_RE,n=>fmt(Number(n)+(i++%2?dy:dx)));
+}
+
+function emblemFits(g) {
+  const centreY=20-8.25*g.scale,vertices=[];
+  for(let i=0;i<6;i++)vertices.push(polar(20,centreY,1.22,i*60));
+  return decorationFits(polygonPath(vertices),g,.1);
+}
+function scalePath(d,k) {
+  // Analytic uniform scale of the closed wordmark's absolute M/L/C/A commands.
+  let command='',position=0;
+  return d.replace(/[MLCAZ]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/gi,token=>{
+    if(/^[a-z]$/i.test(token)){command=token.toUpperCase();position=0;return command;}
+    const i=position++;if(command==='A') {
+      const j=i%7;if(j<2)return fmt(Number(token)*k);if(j<5)return token;return fmt(20+(Number(token)-20)*k);
+    }
+    return fmt(20+(Number(token)-20)*k);
+  });
+}
+
+function registrationMarks(doc) {
+  const group=svgElement(doc,'g',{id:'registration_marks',fill:'#000000',stroke:'none'});
+  [[3,3],[37,3],[37,37],[3,37]].forEach(([x,y],i)=>{
+    const mark=svgElement(doc,'g',{id:`registration_target_${i+1}`});
+    mark.append(svgElement(doc,'path',{d:annulusPath(x,y,.5,.05),'fill-rule':'evenodd'}),svgElement(doc,'path',{d:lineToClosedPolygon(x-1,y,x+1,y,.05)}),svgElement(doc,'path',{d:lineToClosedPolygon(x,y-1,x,y+1,.05)}));group.append(mark);
+  });return group;
+}
+
+function factorySVG(st,plate) {
+  const g=movementGeometry(st),issues=engineeringIssues(st,g);
+  if(issues.errors.length)throw new Error(issues.errors.join(' '));
+  const doc=new DOMParser().parseFromString(`<svg xmlns="${SVG_NS}" xmlns:inkscape="${INKSCAPE_NS}" width="40mm" height="40mm" viewBox="0 0 40 40" version="1.1"/>`,'image/svg+xml'),root=doc.documentElement;
+  const title=svgElement(doc,'title');title.textContent=`Podvig plate ${plate} — ${g.profile.label} — Ø${fmt(st.dialDiameter)} mm`;
+  const desc=svgElement(doc,'desc');desc.textContent=`1:1 mm. Dial front view. Crown ${fmt(st.crownAngle)} deg; date ${g.date?fmt(g.date.angle)+' deg, inner R '+fmt(st.dateInner)+', tangential '+fmt(st.dateWidth)+', radial '+fmt(st.dateHeight)+' mm':'none'}. Four registration targets; circle centreline Ø1.0000 mm, 2.0000 mm hairlines. ${g.profile.note} ${issues.warnings.join(' ')}`;
+  root.append(title,desc);
+  function layer(id,label,attrs={}) {const el=svgElement(doc,'g',{id,...attrs});el.setAttributeNS(INKSCAPE_NS,'inkscape:groupmode','layer');el.setAttributeNS(INKSCAPE_NS,'inkscape:label',label);root.append(el);return el;}
+  function path(parent,id,d,attrs={}) {parent.append(svgElement(doc,'path',{id,d,...attrs}));}
+  const markers=markerGeometry(st,g),marks=[...markers.numerals,...markers.inner,...markers.outer];
+  if(plate==='0') {
+    const mechanical=layer('brass_blank_mechanical','Brass blank — mechanical cut contours',{fill:'none',stroke:'#000000','stroke-width':'.05'});
+    mechanical.append(svgElement(doc,'circle',{id:'blank_perimeter',cx:fmt(CX),cy:fmt(CY),r:fmt(g.dialR)}),svgElement(doc,'circle',{id:'blank_centre_hole',cx:fmt(CX),cy:fmt(CY),r:fmt(g.holeR)}));
+    if(g.date)path(mechanical,'blank_date_aperture',g.date.path);
+    if(g.heart)mechanical.append(svgElement(doc,'circle',{id:'blank_open_heart',cx:fmt(g.heart.cx),cy:fmt(g.heart.cy),r:fmt(g.heart.r)}));
+    const feet=svgElement(doc,'g',{id:'blank_active_feet'});mechanical.append(feet);
+    g.feet.forEach((p,i)=>feet.append(svgElement(doc,'circle',{id:`blank_active_foot_${i+1}`,cx:fmt(p[0]),cy:fmt(p[1]),r:fmt(g.footR)})));
+    if(g.altFeet.length){const alt=layer('alternative_feet_90deg','REFERENCE — alternative 90° feet; choose one pair',{fill:'none',stroke:'#000000','stroke-width':'.05'});g.altFeet.forEach((p,i)=>alt.append(svgElement(doc,'circle',{id:`blank_alternative_foot_${i+1}`,cx:fmt(p[0]),cy:fmt(p[1]),r:fmt(g.footR)})));}
+    const pins=layer('applied_logo_locating_pins','Applied logo — Ø0.40 locating pins',{fill:'none',stroke:'#000000','stroke-width':'.05'});
+    const pinY=20-8.25*g.scale,logo=ellipsePath(20,pinY,.85,.2);
+    // Applied component dimensions stay physical; its centre follows artwork placement.
+    if(emblemFits(g)&&decorationFits(logo,g,.2))for(const [i,x] of [19.45,20.55].entries())pins.append(svgElement(doc,'circle',{id:`logo_locating_pin_${i+1}`,cx:fmt(x),cy:fmt(pinY),r:'.2000'}));
+    const sandwich=layer('sandwich_laser_cutouts','OPTION — sandwich laser contours',{fill:'none',stroke:'#000000','stroke-width':'.05'});
+    marks.forEach(m=>path(sandwich,'cutout_'+m.id,m.d));
+  } else {
+    const ink=layer(`cliche_${plate}`,`Cliché ${plate} — black positive artwork`,{fill:'#000000',stroke:'none'});
+    if(plate==='A')for(const s of computeOctagonGeometry(st).segments){const d=lineToClosedPolygon(s.x1,s.y1,s.x2,s.y2,.34,'butt');if(decorationFits(d,g,.1))path(ink,s.id,d);}
+    if(plate==='B') {
+      for(let m=0;m<60;m++)if(m%5){const d=rotatedRectPath(CX,CY,14.40*g.scale,15.25*g.scale,.18,m*6);if(decorationFits(d,g,.1))path(ink,`min_tick_${m}`,d);}
+      const glyphs=closedPodvigGlyphs().map(d=>scalePath(d,g.scale));
+      if(glyphs.every(d=>decorationFits(d,g,.1)))glyphs.forEach((d,i)=>path(ink,`podvig_glyph_${i+1}`,d,{'fill-rule':'evenodd'}));
+      if(g.date&&st.showDateFrame){const d=g.date;path(ink,'date_window_border',framePath(d.x-.10,d.y-.10,d.w+.20,d.h+.20),{'fill-rule':'evenodd',transform:`rotate(${fmt(d.angle-180)} 20.0000 20.0000)`});}
+    }
+    if(plate==='C')marks.forEach(m=>path(ink,m.id,m.d));
+  }
+  root.append(registrationMarks(doc));return formatSVG(doc);
+}
+
+
+function buildBaseSVG(state) {
+  const geometry = movementGeometry(state);
+  const dialR = geometry.dialR, holeR = geometry.holeR;
+  const dateW = state.dateWidth, dateH = state.dateHeight;
+  const dateX0 = CX - dateW / 2, dateY0 = CY + state.dateInner, dateY1 = dateY0 + dateH;
+  const isDusk = state.lightMode === 'dusk';
+  const lumeFill = isDusk ? 'url(#oldRadiumDuskGrad)' : 'url(#oldRadiumDayGrad)';
+  const lumeFilter = isDusk ? ' filter="url(#lumeGlowFilter)"' : '';
+  const markers = markerGeometry(state,geometry);
+  const outerPipPaths = markers.outer.map(m=>m.d);
+  const innerBatonPaths = markers.inner.map(m=>m.d);
+  const dialCutoutPath = ellipsePath(CX,CY,dialR,dialR) + ' ' + ellipsePath(CX,CY,holeR,holeR,true) +
+    (geometry.date ? ' '+geometry.date.path : '') + (geometry.heart ? ' '+geometry.heart.path : '');
+  const allMarkerCompound = [...outerPipPaths,...innerBatonPaths,...markers.numerals.map(m=>m.d)].join(' ');
+
+  const { segments: octSegments, Pminus, Pplus } = computeOctagonGeometry(state);
+
+  // 12H Shiny Dark Metal Hexagon + Embossed Cyrillic "П"
+  const hexCx = 20.0, hexCy = 11.75, hexR = 1.22, hexInR = 0.95;
+  const hexOutPts = [], hexInPts = [];
+  for (let i = 0; i < 6; i++) {
+    hexOutPts.push(polar(hexCx, hexCy, hexR, i * 60));
+    hexInPts.push(polar(hexCx, hexCy, hexInR, i * 60));
+  }
+  const facetCols = ['#b8c2ce', '#4c525b', '#181a1f', '#101215', '#343940', '#d0dae6'];
+  let hexFacetsSvg = '';
+  for (let i = 0; i < 6; i++) {
+    const ni = (i + 1) % 6;
+    hexFacetsSvg += `      <polygon id="hex_bevel_${i+1}" points="${fmt(hexOutPts[i][0])},${fmt(hexOutPts[i][1])} ${fmt(hexOutPts[ni][0])},${fmt(hexOutPts[ni][1])} ${fmt(hexInPts[ni][0])},${fmt(hexInPts[ni][1])} ${fmt(hexInPts[i][0])},${fmt(hexInPts[i][1])}" fill="${facetCols[i]}" />\n`;
+  }
+  const hexInnerPointsStr = hexInPts.map(p => `${fmt(p[0])},${fmt(p[1])}`).join(' ');
+
+  const pOuterPath = `M 19.5400 12.2200 L 19.5400 11.2800 L 20.4600 11.2800 L 20.4600 12.2200 L 20.1900 12.2200 L 20.1900 11.5500 L 19.8100 11.5500 L 19.8100 12.2200 Z`;
+  const pShadowPath = `M 19.6000 12.2900 L 19.6000 11.3500 L 20.5200 11.3500 L 20.5200 12.2900 L 20.2500 12.2900 L 20.2500 11.6200 L 19.8700 11.6200 L 19.8700 12.2900 Z`;
+  const pHighlightPath = `M 19.5150 12.1950 L 19.5150 11.2550 L 20.4350 11.2550 L 20.4350 12.1950 L 20.1650 12.1950 L 20.1650 11.5250 L 19.7850 11.5250 L 19.7850 12.1950 Z`;
+
+  const wy = 14.20, wh = 1.25, xh = 0.90;
+  const podvigPaths = [
+    `M 16.8500 ${fmt(wy)} L 16.8500 ${fmt(wy - wh)} L 17.7500 ${fmt(wy - wh)} L 17.7500 ${fmt(wy)}`,
+    `M 18.5000 ${fmt(wy - xh)} A 0.4000 0.4500 0 1 1 18.4990 ${fmt(wy - xh)} Z`,
+    `M 19.1800 ${fmt(wy + 0.28)} L 19.1800 ${fmt(wy)} L 20.1400 ${fmt(wy)} L 20.1400 ${fmt(wy + 0.28)} M 19.3200 ${fmt(wy)} L 19.4600 ${fmt(wy - xh)} L 19.9600 ${fmt(wy - xh)} L 19.9600 ${fmt(wy)}`,
+    `M 20.5200 ${fmt(wy)} L 20.5200 ${fmt(wy - xh)} L 20.9500 ${fmt(wy - xh)} A 0.2200 0.2200 0 0 1 20.9500 ${fmt(wy - xh/2)} L 20.5200 ${fmt(wy - xh/2)} M 20.9600 ${fmt(wy - xh/2)} A 0.2300 0.2300 0 0 1 20.9600 ${fmt(wy)} L 20.5200 ${fmt(wy)}`,
+    `M 21.5800 ${fmt(wy - xh)} L 21.5800 ${fmt(wy)} L 22.3000 ${fmt(wy - xh)} L 22.3000 ${fmt(wy)}`,
+    `M 22.7200 ${fmt(wy)} L 22.7200 ${fmt(wy - xh)} L 23.3200 ${fmt(wy - xh)}`
+  ];
+
+  let minTicksSvg = '';
+  for (let m = 0; m < 60; m++) {
+    if (m % 5 === 0) continue;
+    const [x1, y1] = polar(CX, CY, 14.40 * geometry.scale, m * 6.0);
+    const [x2, y2] = polar(CX, CY, 15.25 * geometry.scale, m * 6.0);
+    minTicksSvg += `      <line id="min_tick_${m}" x1="${fmt(x1)}" y1="${fmt(y1)}" x2="${fmt(x2)}" y2="${fmt(y2)}" />\n`;
+  }
+
+  const totalMinutes = state.timeMinutes;
+  const hourAngle = state.zeroPose ? 0.0 : ((totalMinutes / 60.0) * 30.0) - 360.0;
+  const minAngle  = state.zeroPose ? 0.0 : ((totalMinutes % 60) * 6.0);
+  const secAngle  = state.zeroPose ? 0.0 : -132.5;
+
+  const showSet1 = state.handset === 'set1' || state.handset === 'all';
+  const showSet2 = state.handset === 'set2' || state.handset === 'all';
+  const showSet3 = state.handset === 'set3' || state.handset === 'all';
+
+  const dialFillUrl = state.dialFinish === 'flat' ? 'url(#dialFlatMatteGrad)' : 'url(#dialFumeGrad)';
+
+  let guidesSvg = '';
+  if (state.showGuides) {
+    const d = state.octGap / 2.0;
+    guidesSvg += `  <g id="cad_verification_guides" opacity="0.85">\n`;
+    for (let h = 1; h <= 12; h++) {
+      const deg = h * 30.0;
+      const [rx, ry] = polar(CX, CY, 16.2 * geometry.scale, deg);
+      guidesSvg += `    <line x1="${fmt(CX)}" y1="${fmt(CY)}" x2="${fmt(rx)}" y2="${fmt(ry)}" stroke="#38bdf8" stroke-width="0.04" stroke-dasharray="0.25,0.20" />\n`;
+    }
+    // Draw parallel corridor boundaries (±0.50mm around each non-cardinal ray) & endpoint markers
+    for (const deg of [30, 60, 120, 150, 210, 240, 300, 330]) {
+      const c1a = rayOffsetPoint(CX, CY, state.octRadius * geometry.scale - 1.1, deg, -d);
+      const c1b = rayOffsetPoint(CX, CY, state.octRadius * geometry.scale + 1.1, deg, -d);
+      const c2a = rayOffsetPoint(CX, CY, state.octRadius * geometry.scale - 1.1, deg, +d);
+      const c2b = rayOffsetPoint(CX, CY, state.octRadius * geometry.scale + 1.1, deg, +d);
+      guidesSvg += `    <line x1="${fmt(c1a[0])}" y1="${fmt(c1a[1])}" x2="${fmt(c1b[0])}" y2="${fmt(c1b[1])}" stroke="#f2c41d" stroke-width="0.035" opacity="0.7" />\n`;
+      guidesSvg += `    <line x1="${fmt(c2a[0])}" y1="${fmt(c2a[1])}" x2="${fmt(c2b[0])}" y2="${fmt(c2b[1])}" stroke="#f2c41d" stroke-width="0.035" opacity="0.7" />\n`;
+      const p1 = Pminus[deg], p2 = Pplus[deg];
+      guidesSvg += `    <circle cx="${fmt(p1[0])}" cy="${fmt(p1[1])}" r="0.11" fill="#38bdf8" />\n`;
+      guidesSvg += `    <circle cx="${fmt(p2[0])}" cy="${fmt(p2[1])}" r="0.11" fill="#38bdf8" />\n`;
+    }
+    guidesSvg += `    <rect x="${fmt(dateX0)}" y="${fmt(dateY0)}" width="${fmt(dateW)}" height="${fmt(dateH)}" fill="none" stroke="#38bdf8" stroke-width="0.06" stroke-dasharray="0.2,0.15" />\n`;
+    guidesSvg += `  </g>\n`;
+  }
+
+  const dateMidY = (dateY0 + dateY1) / 2.0;
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="40mm"
+   height="40mm"
+   viewBox="0 0 40 40"
+   version="1.1"
+   id="podvig_sw200_dial_33mm_v2">
+  <title>Podvig 02 Night Relay — 33mm Dial &amp; 3 Handset System (Sellita SW200 / SW260)</title>
+  <desc>1:1 Metric SVG (1 unit = 1.00 mm). Center (20,20). Date Window: R=${fmt(state.dateInner)}mm to ${fmt(state.dateInner + state.dateHeight)}mm (${fmt(dateW)}mm wide x ${fmt(dateH)}mm high). Hour-aligned 30/60 deg octagon with ${fmt(state.octGap)}mm centered radial gaps.</desc>
+
+  <defs>
+    <radialGradient id="dialFlatMatteGrad" cx="20" cy="20" r="16.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="${isDusk ? '#1c1e22' : '#26282c'}" />
+      <stop offset="100%" stop-color="${isDusk ? '#16181b' : '#202225'}" />
+    </radialGradient>
+
+    <radialGradient id="dialFumeGrad" cx="20" cy="20" r="16.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="${isDusk ? '#343840' : '#4a4e56'}" />
+      <stop offset="48%" stop-color="${isDusk ? '#23262c' : '#31343a'}" />
+      <stop offset="82%" stop-color="${isDusk ? '#16181c' : '#202226'}" />
+      <stop offset="100%" stop-color="${isDusk ? '#0e1013' : '#141518'}" />
+    </radialGradient>
+
+    <linearGradient id="oldRadiumDayGrad" x1="8" y1="8" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E6CFA0" />
+      <stop offset="100%" stop-color="#D4B882" />
+    </linearGradient>
+    <radialGradient id="oldRadiumDuskGrad" cx="20" cy="20" r="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B6FF86" />
+      <stop offset="100%" stop-color="#86E65E" />
+    </radialGradient>
+
+    <linearGradient id="silverFacetLeft" x1="18.5" y1="6" x2="20" y2="23" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="50%" stop-color="#DFE5ED" />
+      <stop offset="100%" stop-color="#9EA6B2" />
+    </linearGradient>
+    <linearGradient id="silverFacetRight" x1="20" y1="6" x2="21.5" y2="23" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B0B8C2" />
+      <stop offset="50%" stop-color="#7E8692" />
+      <stop offset="100%" stop-color="#C4CCD6" />
+    </linearGradient>
+    <linearGradient id="silverBossGrad" x1="18.2" y1="18.2" x2="21.8" y2="21.8" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="55%" stop-color="#C2C8D2" />
+      <stop offset="100%" stop-color="#767E8A" />
+    </linearGradient>
+
+    <linearGradient id="darkMetalDeckGrad" x1="18.8" y1="10.6" x2="21.2" y2="12.9" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#181B20" />
+      <stop offset="45%" stop-color="#303640" />
+      <stop offset="55%" stop-color="#58616E" />
+      <stop offset="75%" stop-color="#1E2228" />
+      <stop offset="100%" stop-color="#0E1014" />
+    </linearGradient>
+    <linearGradient id="embossedPGrad" x1="19.5" y1="11.2" x2="20.5" y2="12.3" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C8D2E0" />
+      <stop offset="30%" stop-color="#484F59" />
+      <stop offset="55%" stop-color="#A8B2C0" />
+      <stop offset="100%" stop-color="#1E2228" />
+    </linearGradient>
+
+    <filter id="lumeGlowFilter" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="0.45" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 1: THE DIAL (33.00mm, Center Hole Ø2.00mm, 6H Date 8.85-11.55mm) -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer1_dial_base"
+     inkscape:label="Layer 1: Dial Base (33mm SW200/SW260)">
+${state.dialFinish === 'sandwich' ? `    <circle id="sandwich_lower_lume_disc" cx="20.0000" cy="20.0000" r="${fmt(dialR-.05)}" fill="${lumeFill}" />
+    <path
+       id="dial_plate_33mm_sandwich_cutout"
+       d="${dialCutoutPath}${allMarkerCompound}"
+       fill="${dialFillUrl}"
+       fill-rule="evenodd"
+       stroke="#0E0F12"
+       stroke-width="0.06" />` : `    <path
+       id="dial_plate_33mm_cutout"
+       d="${dialCutoutPath}"
+       fill="${dialFillUrl}"
+       fill-rule="evenodd"
+       stroke="#0E0F12"
+       stroke-width="0.08" />`}
+    <circle id="dial_outer_perimeter_33mm" cx="20.0000" cy="20.0000" r="${fmt(dialR)}" fill="none" stroke="#3A3C3F" stroke-width="0.05" />
+    <circle id="dial_center_hole_2mm" cx="20.0000" cy="20.0000" r="${fmt(holeR)}" fill="none" stroke="#3A3C3F" stroke-width="0.05" />
+    ${geometry.date ? `<path id="dial_date_cutout_6h_sw200" d="${geometry.date.path}" fill="none" stroke="#3A3C3F" stroke-width="0.05" />` : ''}
+    ${buildFeetMarkup(state,geometry)}
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 2: HOUR-ALIGNED OCTAGON PATTERN, SHINY DARK METAL LOGO & FRAME  -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer2_design_pattern"
+     inkscape:label="Layer 2: Design Pattern (Hour-Aligned Octagon &amp; Logo)">
+    <g id="hour_aligned_octagon" stroke="#70757A" stroke-width="0.34" stroke-linecap="butt" fill="none">
+${octSegments.map(s => `      <line id="${s.id}" x1="${fmt(s.x1)}" y1="${fmt(s.y1)}" x2="${fmt(s.x2)}" y2="${fmt(s.y2)}" />`).join('\n')}
+    </g>
+
+    <g id="logo_emblem_12h_metallic">
+${hexFacetsSvg}      <polygon id="hex_inner_deck" points="${hexInnerPointsStr}" fill="url(#darkMetalDeckGrad)" stroke="#0D0F12" stroke-width="0.04" />
+      <path id="embossed_P_shadow" d="${pShadowPath}" fill="rgba(0,0,0,0.80)" />
+      <path id="embossed_P_highlight" d="${pHighlightPath}" fill="#E2EAF4" />
+      <path id="embossed_P_top" d="${pOuterPath}" fill="url(#embossedPGrad)" />
+    </g>
+
+    <g id="brand_wordmark_podvig">
+      <g id="podvig_vector_glyphs" fill="none" stroke="#DDD8C7" stroke-width="0.18" stroke-linecap="butt" stroke-linejoin="round">
+${podvigPaths.map((d, i) => `        <path id="podvig_glyph_${i+1}" d="${d}" />`).join('\n')}
+      </g>
+      <text id="podvig_editable_text" x="20.0000" y="14.2000" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="1.35" letter-spacing="0.08" fill="#DDD8C7" display="none">Подвиг</text>
+    </g>
+
+    ${buildDateMarkup(state,geometry)}
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 3: THE INDEXES, MINUTE TRACK & STENCIL NUMBERS                  -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer3_indexes_and_numbers"
+     inkscape:label="Layer 3: Indexes, Minute Track &amp; Stencil Numbers">
+    <g id="minute_track_ticks" stroke="#E5E1D2" stroke-width="0.18" stroke-linecap="butt">
+${minTicksSvg}    </g>
+
+    <g id="outer_hour_pips" fill="${lumeFill}" stroke="#141619" stroke-width="${state.dialFinish === 'sandwich' ? '0.07' : '0.03'}"${lumeFilter}>
+${outerPipPaths.map((d, i) => `      <path id="${markers.outer[i].id}" d="${d}" />`).join('\n')}
+    </g>
+
+    <g id="inner_hour_batons" fill="${lumeFill}" stroke="#141619" stroke-width="${state.dialFinish === 'sandwich' ? '0.08' : '0.04'}"${lumeFilter}>
+${innerBatonPaths.map((d, i) => `      <path id="${markers.inner[i].id}" d="${d}" />`).join('\n')}
+    </g>
+
+    <g id="stencil_arabic_numerals" fill="${lumeFill}" stroke="#141619" stroke-width="${state.dialFinish === 'sandwich' ? '0.08' : '0.04'}"${lumeFilter}>
+${markers.numerals.map(m=>`      <path id="${m.id}" d="${m.d}" />`).join('\n')}
+    </g>
+  </g>
+
+${guidesSvg}
+  <!-- ===================================================================== -->
+  <!-- LAYER 4: HOUR HAND — SET 1 (CLASSIC MILITARY SWORD, SILVER)           -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer4_hour_hand_sword"
+     inkscape:label="Layer 4: Hour Hand - Set 1 (Sword)"
+     display="${showSet1 ? 'inline' : 'none'}">
+    <g id="hour_hand_sword_assembly" transform="rotate(${fmt(hourAngle)}, 20.0, 20.0)">
+      <path id="hour_sword_left_facet" d="M 20.0000 22.1500 L 19.3500 22.1500 L 19.3500 18.2000 L 19.0800 17.5000 L 19.0800 11.7500 L 20.0000 10.7000 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="hour_sword_right_facet" d="M 20.0000 22.1500 L 20.6500 22.1500 L 20.6500 18.2000 L 20.9200 17.5000 L 20.9200 11.7500 L 20.0000 10.7000 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" />
+      <circle id="hour_sword_boss" cx="20.0000" cy="20.0000" r="1.6500" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="hour_sword_lume" d="M 19.4500 17.1000 L 20.5500 17.1000 L 20.5500 12.0500 L 20.0000 11.4000 L 19.4500 12.0500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="hour_sword_pipe_hole_1_50mm" cx="20.0000" cy="20.0000" r="0.7500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 5: MINUTE HAND — SET 1 (CLASSIC MILITARY SWORD, SILVER)         -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer5_minute_hand_sword"
+     inkscape:label="Layer 5: Minute Hand - Set 1 (Sword)"
+     display="${showSet1 ? 'inline' : 'none'}">
+    <g id="minute_hand_sword_assembly" transform="rotate(${fmt(minAngle)}, 20.0, 20.0)">
+      <path id="min_sword_left_facet" d="M 20.0000 22.3500 L 19.4200 22.3500 L 19.4200 18.3000 L 19.2200 17.6500 L 19.2200 7.3500 L 20.0000 6.1500 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="min_sword_right_facet" d="M 20.0000 22.3500 L 20.5800 22.3500 L 20.5800 18.3000 L 20.7800 17.6500 L 20.7800 7.3500 L 20.0000 6.1500 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" />
+      <circle id="min_sword_boss" cx="20.0000" cy="20.0000" r="1.4200" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="min_sword_lume" d="M 19.5400 17.2000 L 20.4600 17.2000 L 20.4600 7.6500 L 20.0000 6.9000 L 19.5400 7.6500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="min_sword_pinion_hole_0_90mm" cx="20.0000" cy="20.0000" r="0.4500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 6: HOUR HAND — SET 2 (CENTER-SKEWED KITE, SILVER)               -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer6_hour_hand_kite"
+     inkscape:label="Layer 6: Hour Hand - Set 2 (Center-Skewed Kite)"
+     display="${showSet2 ? 'inline' : 'none'}">
+    <g id="hour_hand_kite_assembly" transform="rotate(${fmt(hourAngle)}, 20.0, 20.0)">
+      <path id="hour_kite_left_facet" d="M 20.0000 22.1000 L 19.4800 22.1000 L 19.3200 18.4500 L 18.7500 16.8000 L 20.0000 10.6500 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" stroke-linejoin="miter" />
+      <path id="hour_kite_right_facet" d="M 20.0000 22.1000 L 20.5200 22.1000 L 20.6800 18.4500 L 21.2500 16.8000 L 20.0000 10.6500 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" stroke-linejoin="miter" />
+      <circle id="hour_kite_boss" cx="20.0000" cy="20.0000" r="1.6500" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="hour_kite_lume" d="M 20.0000 17.7500 L 20.8200 16.6500 L 20.0000 11.6500 L 19.1800 16.6500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="hour_kite_pipe_hole_1_50mm" cx="20.0000" cy="20.0000" r="0.7500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 7: MINUTE HAND — SET 2 (CENTER-SKEWED KITE, SILVER)             -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer7_minute_hand_kite"
+     inkscape:label="Layer 7: Minute Hand - Set 2 (Center-Skewed Kite)"
+     display="${showSet2 ? 'inline' : 'none'}">
+    <g id="minute_hand_kite_assembly" transform="rotate(${fmt(minAngle)}, 20.0, 20.0)">
+      <path id="min_kite_left_facet" d="M 20.0000 22.3500 L 19.5200 22.3500 L 19.3800 18.3500 L 19.0200 16.2000 L 20.0000 6.1000 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" stroke-linejoin="miter" />
+      <path id="min_kite_right_facet" d="M 20.0000 22.3500 L 20.4800 22.3500 L 20.6200 18.3500 L 20.9800 16.2000 L 20.0000 6.1000 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" stroke-linejoin="miter" />
+      <circle id="min_kite_boss" cx="20.0000" cy="20.0000" r="1.4200" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="min_kite_lume" d="M 20.0000 17.6500 L 20.6000 16.0500 L 20.0000 7.2000 L 19.4000 16.0500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="min_kite_pinion_hole_0_90mm" cx="20.0000" cy="20.0000" r="0.4500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 8: HOUR HAND — SET 3 (TACTICAL RANGEFINDER / COLLIMATOR)        -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer8_hour_hand_tactical"
+     inkscape:label="Layer 8: Hour Hand - Set 3 (Tactical Rangefinder)"
+     display="${showSet3 ? 'inline' : 'none'}">
+    <g id="hour_hand_tactical_assembly" transform="rotate(${fmt(hourAngle)}, 20.0, 20.0)">
+      <path id="hour_tac_left_facet" d="M 20.0000 22.3000 L 19.3000 21.8500 L 19.3000 18.1000 L 18.8200 17.3000 L 18.8200 13.6000 L 19.2800 12.6000 L 19.7800 11.8000 L 19.8200 10.5000 L 20.0000 10.5000 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="hour_tac_right_facet" d="M 20.0000 22.3000 L 20.7000 21.8500 L 20.7000 18.1000 L 21.1800 17.3000 L 21.1800 13.6000 L 20.7200 12.6000 L 20.2200 11.8000 L 20.1800 10.5000 L 20.0000 10.5000 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" />
+      <circle id="hour_tac_boss" cx="20.0000" cy="20.0000" r="1.6500" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="hour_tac_lume_lower" d="M 19.3200 17.1000 L 20.6800 17.1000 L 20.6800 14.8500 L 19.3200 14.8500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <path id="hour_tac_lume_upper" d="M 19.3200 14.4500 L 20.6800 14.4500 L 20.6800 13.7000 L 20.0000 12.2500 L 19.3200 13.7000 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="hour_tac_pipe_hole_1_50mm" cx="20.0000" cy="20.0000" r="0.7500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 9: MINUTE HAND — SET 3 (TACTICAL RANGEFINDER / COLLIMATOR)      -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer9_minute_hand_tactical"
+     inkscape:label="Layer 9: Minute Hand - Set 3 (Tactical Rangefinder)"
+     display="${showSet3 ? 'inline' : 'none'}">
+    <g id="minute_hand_tactical_assembly" transform="rotate(${fmt(minAngle)}, 20.0, 20.0)">
+      <path id="min_tac_left_facet" d="M 20.0000 22.5000 L 19.3800 22.0000 L 19.3800 18.2000 L 19.0800 17.4000 L 19.0800 9.1000 L 19.4500 7.9000 L 19.8200 7.2000 L 19.8500 5.9500 L 20.0000 5.9500 Z" fill="url(#silverFacetLeft)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="min_tac_right_facet" d="M 20.0000 22.5000 L 20.6200 22.0000 L 20.6200 18.2000 L 20.9200 17.4000 L 20.9200 9.1000 L 20.5500 7.9000 L 20.1800 7.2000 L 20.1500 5.9500 L 20.0000 5.9500 Z" fill="url(#silverFacetRight)" stroke="#2A2E35" stroke-width="0.05" />
+      <circle id="min_tac_boss" cx="20.0000" cy="20.0000" r="1.4200" fill="url(#silverBossGrad)" stroke="#2A2E35" stroke-width="0.05" />
+      <path id="min_tac_lume_lower" d="M 19.4800 17.1500 L 20.5200 17.1500 L 20.5200 11.8500 L 19.4800 11.8500 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <path id="min_tac_lume_upper" d="M 19.4800 11.4500 L 20.5200 11.4500 L 20.5200 9.2000 L 20.0000 7.5500 L 19.4800 9.2000 Z" fill="${lumeFill}" stroke="#3A4048" stroke-width="0.04"${lumeFilter} />
+      <circle id="min_tac_pinion_hole_0_90mm" cx="20.0000" cy="20.0000" r="0.4500" fill="none" stroke="#525862" stroke-width="0.04" />
+    </g>
+  </g>
+
+  <!-- ===================================================================== -->
+  <!-- LAYER 10: SECONDS HAND (YELLOW POINTER + SILVER DRONE COUNTERWEIGHT)  -->
+  <!-- ===================================================================== -->
+  <g
+     inkscape:groupmode="layer"
+     id="layer10_seconds_hand"
+     inkscape:label="Layer 10: Seconds Hand (Yellow + Silver Drone)"
+     display="${state.showSeconds ? 'inline' : 'none'}">
+    <g id="seconds_hand_assembly" transform="rotate(${fmt(secAngle)}, 20.0, 20.0)">
+      <path id="seconds_yellow_needle" d="M 19.8300 22.1500 L 20.1700 22.1500 L 20.2100 20.0000 L 20.1200 5.1500 L 19.8800 5.1500 L 19.7900 20.0000 Z" fill="#F2C41D" stroke="#B58E0A" stroke-width="0.03" />
+
+      <g id="silver_drone_counterweight">
+        <line id="drone_tail_stem" x1="20.0000" y1="22.0500" x2="20.0000" y2="24.0800" stroke="#E2E8F0" stroke-width="0.20" stroke-linecap="round" />
+        <path id="drone_tail_fin" d="M 19.8000 23.9500 L 20.2000 23.9500 L 20.0000 24.2200 Z" fill="#E2E8F0" />
+        <line id="drone_arm_1" x1="19.1500" y1="22.1000" x2="20.8500" y2="23.6000" stroke="#EEF2F6" stroke-width="0.22" stroke-linecap="round" />
+        <line id="drone_arm_2" x1="20.8500" y1="22.1000" x2="19.1500" y2="23.6000" stroke="#EEF2F6" stroke-width="0.22" stroke-linecap="round" />
+        <rect id="drone_fuselage" x="19.7500" y="22.3800" width="0.5000" height="0.9200" rx="0.2000" fill="url(#silverBossGrad)" stroke="#475569" stroke-width="0.06" />
+        <circle id="drone_rotor_fl" cx="19.1500" cy="22.1000" r="0.2600" fill="#1F2022" stroke="#FFFFFF" stroke-width="0.10" />
+        <circle id="drone_rotor_fr" cx="20.8500" cy="22.1000" r="0.2600" fill="#1F2022" stroke="#FFFFFF" stroke-width="0.10" />
+        <circle id="drone_rotor_rl" cx="19.1500" cy="23.6000" r="0.2600" fill="#1F2022" stroke="#FFFFFF" stroke-width="0.10" />
+        <circle id="drone_rotor_rr" cx="20.8500" cy="23.6000" r="0.2600" fill="#1F2022" stroke="#FFFFFF" stroke-width="0.10" />
+        <circle id="drone_pin_fl" cx="19.1500" cy="22.1000" r="0.0650" fill="#F2C41D" />
+        <circle id="drone_pin_fr" cx="20.8500" cy="22.1000" r="0.0650" fill="#F2C41D" />
+        <circle id="drone_pin_rl" cx="19.1500" cy="23.6000" r="0.0650" fill="#F2C41D" />
+        <circle id="drone_pin_rr" cx="20.8500" cy="23.6000" r="0.0650" fill="#F2C41D" />
+      </g>
+
+      <circle id="seconds_boss_outer" cx="20.0000" cy="20.0000" r="0.9800" fill="#25282E" stroke="#E2E8F0" stroke-width="0.06" />
+      <circle id="seconds_boss_yellow_ring" cx="20.0000" cy="20.0000" r="0.5200" fill="none" stroke="#F2C41D" stroke-width="0.14" />
+      <circle id="seconds_pinion_cap" cx="20.0000" cy="20.0000" r="0.1800" fill="#E2E8F0" />
+    </g>
+  </g>
+</svg>`;
+}
+
+// State, rendering and downloads share the same engineering geometry.
+let zeroPose = false;
+const byId = id => document.getElementById(id);
+const numeric = id => Number(byId(id).value);
+const initialControls = Object.fromEntries([...document.querySelectorAll('input,select')].map(el=>[el.id,{value:el.value,checked:el.checked}]));
+
+function getCurrentState(overrides={}) {
+  const crown=byId('crownPosition').value,date=byId('datePosition').value;
+  return Object.assign({
+    movement: byId('movementSelect').value || 'sw210',
+    dialDiameter: numeric(byId('manualDiameterMode').checked?'manualDiameter':'dialDiameter'),
+    crownAngle: crown==='custom'?numeric('crownAngle'):Number(crown),
+    datePosition: date,
+    dateAngle: date==='custom'?numeric('dateAngle'):date==='none'||date==='follow'?180:Number(date),
+    centerHoleDiameter:numeric('centerHoleDiameter'),footDiameter:numeric('footDiameter'),
+    feet:[[numeric('foot1X'),numeric('foot1Y')],[numeric('foot2X'),numeric('foot2Y')]],
+    openHeartEnabled:byId('openHeartEnabled').checked,heartX:numeric('heartX'),heartY:numeric('heartY'),heartDiameter:numeric('heartDiameter'),
+    cadOutlineMode:byId('cadOutlineMode').checked,
+    handset:byId('handsetSelect').value,showSeconds:byId('showSeconds').checked,timeMinutes:numeric('timeScrub'),
+    octRadius:numeric('octRadius'),octGap:numeric('octGap'),octClipMethod:byId('octClipMethod').value,cardinalGaps:byId('cardinalGaps').value,showGuides:byId('showGuides').checked,
+    dateInner:numeric('dateInner'),dateWidth:numeric('dateWidth'),dateHeight:numeric('dateHeight'),dialFinish:byId('dialFinish').value,lightMode:byId('lightMode').value,
+    showDateFrame:byId('showDateFrame').checked,showDialFeet:byId('showDialFeet').checked,zeroPose
+  },overrides);
+}
+
+function applyMovement(key) {
+  const p=MOVEMENTS[key];byId('movementSelect').value=key;
+  for(const [id,value] of Object.entries({dialDiameter:p.diameter,manualDiameter:p.diameter,centerHoleDiameter:p.hole,footDiameter:p.foot,foot1X:p.feet[0][0],foot1Y:p.feet[0][1],foot2X:p.feet[1][0],foot2Y:p.feet[1][1],crownPosition:'90',crownAngle:90,datePosition:p.date?String(p.dateAngle):'none',dateAngle:p.dateAngle??90,dateInner:p.date?.[0]??8.85,dateWidth:p.date?.[1]??2,dateHeight:p.date?.[2]??2.7,heartX:p.heart?.[0]??-6.827,heartY:p.heart?.[1]??.558,heartDiameter:p.heart?.[2]??10}))byId(id).value=value;
+  byId('openHeartEnabled').checked=!!p.heart;
+  byId('manualDiameterMode').checked=false;
+}
+
+function updateStudio() {
+  byId('manualDiameter').disabled=!byId('manualDiameterMode').checked;
+  byId('dialDiameter').disabled=byId('manualDiameterMode').checked;
+  byId('crownAngle').disabled=byId('crownPosition').value!=='custom';
+  byId('dateAngle').disabled=byId('datePosition').value!=='custom';
+  for(const id of ['heartX','heartY','heartDiameter'])byId(id).disabled=!byId('openHeartEnabled').checked;
+  const invalid=[...document.querySelectorAll('input[type="number"]')].filter(el=>!el.disabled&&!el.checkValidity());
+  if(invalid.length){byId('engineeringStatus').textContent='Enter a valid number within the shown field limits.';byId('engineeringStatus').dataset.level='error';document.querySelectorAll('[id^="dl"]').forEach(b=>b.disabled=true);return;}
+  const st=getCurrentState(),g=movementGeometry(st),issues=engineeringIssues(st,g);
+  for(const [id,value] of Object.entries({octRadiusVal:st.octRadius,octGapVal:st.octGap,dateInnerVal:st.dateInner,dateWidthVal:st.dateWidth,dateHeightVal:st.dateHeight,dialDiameterVal:st.dialDiameter}))byId(id).textContent=value.toFixed(2)+' mm';
+  if(Math.abs(g.scale-1)>.00001)byId('octRadiusVal').textContent=st.octRadius.toFixed(2)+' → '+(st.octRadius*g.scale).toFixed(2)+' mm';
+  byId('telDiameter').textContent=st.dialDiameter.toFixed(2)+' mm';byId('telHole').textContent='Ø'+st.centerHoleDiameter.toFixed(2)+' mm';
+  byId('telDate').textContent=g.date?`${g.date.angle.toFixed(1)}° / R=${st.dateInner.toFixed(2)}..${(st.dateInner+st.dateHeight).toFixed(2)} mm (${st.dateWidth.toFixed(2)}×${st.dateHeight.toFixed(2)} mm)`:'No date aperture';
+  byId('telGap').textContent=`${st.octGap.toFixed(2)} mm @ 30°/60° rays`;
+  byId('timeVal').textContent=st.zeroPose?'12:00 (0°)':`${Math.floor(st.timeMinutes/60)||12}:${String(st.timeMinutes%60).padStart(2,'0')}`;
+  byId('telHands').textContent={set1:'Set 1: Classic Sword',set2:'Set 2: Center-Skewed Kite',set3:'Set 3: Tactical Rangefinder',all:'All 3 Handsets Active',none:'Hands Hidden'}[st.handset];
+  byId('movementNote').replaceChildren(document.createTextNode(g.profile.note+' '));
+  const link=document.createElement('a');link.href=g.profile.source;link.textContent='Movement source';link.target='_blank';link.rel='noopener';byId('movementNote').append(link);
+  const messages=[...issues.errors,...issues.warnings];
+  byId('engineeringStatus').textContent=messages.length?messages.join(' • '):'Geometry checks passed. 1 SVG unit = 1 mm. Artwork and movement dimensions are independent.';
+  byId('engineeringStatus').dataset.level=issues.errors.length?'error':issues.warnings.length?'warning':'ok';
+  document.querySelectorAll('[id^="dl"]').forEach(button=>button.disabled=issues.errors.length>0);
+  byId('svgContainer').innerHTML=buildCompleteSVG(st);
+}
+
+function saveSVG(filename,svgString) {
+  const blob=new Blob([svgString],{type:'image/svg+xml;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();
+  // Delay revocation until the browser has consumed the object URL.
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  byId('exportStatus').textContent='Downloaded '+filename;
+}
+function validateExport(st) {
+  if([...document.querySelectorAll('input[type="number"]')].some(el=>!el.disabled&&!el.checkValidity()))throw new Error('A numeric field is invalid.');
+  const errors=engineeringIssues(st).errors;if(errors.length)throw new Error(errors.join(' '));
+}
+function downloadSVGFile(filename,overrides={}) {
+  try{const st=getCurrentState({showGuides:false,...overrides});validateExport(st);saveSVG(filename,buildCompleteSVG(st));}
+  catch(e){byId('exportStatus').textContent='Export stopped: '+e.message;}
+}
+function plateFilename(plate,movement) {
+  // Preserve the requested Swiss SW200 filename, with unambiguous names for other movements.
+  return plate==='0'?`podvig_plate0_brass_blank_${movement}.svg`:{A:'podvig_cliche_A_octagon.svg',B:'podvig_cliche_B_white_print.svg',C:'podvig_cliche_C_lume_mask.svg'}[plate];
+}
+function downloadFactory(plate) {
+  try{const st=getCurrentState({showGuides:false});validateExport(st);saveSVG(plateFilename(plate,st.movement),factorySVG(st,plate));}
+  catch(e){byId('exportStatus').textContent='Export stopped: '+e.message;}
+}
+
+for(const [key,p] of Object.entries(MOVEMENTS)){const option=document.createElement('option');option.value=key;option.textContent=p.label;byId('movementSelect').append(option);}
+applyMovement('sw210');
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',()=>{
+  if(el.id==='movementSelect')applyMovement(el.value);
+  if(el.id==='timeScrub')zeroPose=false;
+  if(el.id==='crownPosition'&&el.value!=='custom')byId('crownAngle').value=el.value;
+  if(el.id==='datePosition'&&!['custom','none','follow'].includes(el.value))byId('dateAngle').value=el.value;
+  if(el.id==='dialDiameter')byId('manualDiameter').value=el.value;
+  if(el.id==='manualDiameterMode'&&!el.checked){byId('dialDiameter').value=Math.min(35,Math.max(28.5,numeric('manualDiameter')));byId('manualDiameter').value=byId('dialDiameter').value;}
+  updateStudio();
+}));
+byId('pose1010Btn').addEventListener('click',()=>{zeroPose=false;byId('timeScrub').value=609;updateStudio();});
+byId('pose1200Btn').addEventListener('click',()=>{zeroPose=true;updateStudio();});
+byId('resetSpecsBtn').addEventListener('click',()=>{
+  for(const [id,v] of Object.entries(initialControls))if(id!=='movementSelect'){byId(id).value=v.value;byId(id).checked=v.checked;}
+  zeroPose=false;applyMovement('sw210');updateStudio();
+});
+byId('dlCurrentSvg').addEventListener('click',()=>{const s=getCurrentState();downloadSVGFile(`podvig_${s.movement}_dial_${s.dialFinish}_${s.handset}.svg`);});
+byId('dlFlatSvg').addEventListener('click',()=>downloadSVGFile(`podvig_${getCurrentState().movement}_dial_flat_matte_10layers.svg`,{dialFinish:'flat'}));
+byId('dlGradSvg').addEventListener('click',()=>downloadSVGFile(`podvig_${getCurrentState().movement}_dial_fume_gradient_10layers.svg`,{dialFinish:'gradient'}));
+byId('dlSandwichSvg').addEventListener('click',()=>downloadSVGFile(`podvig_${getCurrentState().movement}_dial_sandwich_cutout_10layers.svg`,{dialFinish:'sandwich'}));
+byId('dl1200Svg').addEventListener('click',()=>downloadSVGFile(`podvig_${getCurrentState().movement}_dial_1200_technical_all_hands.svg`,{zeroPose:true,cadOutlineMode:true}));
+for(const [id,plate] of Object.entries({dlPlate0:'0',dlClicheA:'A',dlClicheB:'B',dlClicheC:'C'}))byId(id).addEventListener('click',()=>downloadFactory(plate));
+// Stable geometry API for the dependency-free browser regression suite and future movement profiles.
+window.DialStudio=Object.freeze({getCurrentState,movementGeometry,markerGeometry,computeOctagonGeometry,buildCompleteSVG,factorySVG,lineToClosedPolygon,closedPodvigGlyphs,engineeringIssues,profiles:MOVEMENTS,applyMovement,updateStudio,flattenPath});
+updateStudio();
+</script>
+</body>
+</html>
